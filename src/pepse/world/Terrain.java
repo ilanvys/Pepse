@@ -5,6 +5,7 @@ import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.util.ColorSupplier;
 
 import java.awt.*;
 
@@ -12,6 +13,7 @@ public class Terrain {
 
     private static final Color BASE_GROUND_COLOR = new Color(212, 123,74);
     private static final String GROUND_TAG = "ground";
+    private static final int TERRAIN_DEPTH = 20;
 
     private final GameObjectCollection gameObjects;
     private final int groundLayer;
@@ -37,17 +39,56 @@ public class Terrain {
 
     public float groundHeightAt(float x) {
 
-        return (float) (noise.noise(x)+1)*groundHeightAtX0;  // +1 since it returns neg values
+        return 3 * Block.SIZE * ( (float) noise.noise(x)) + groundHeightAtX0;  // todo decide. keep the 3?
 
     }
 
     public void createInRange(int minX, int maxX){
 
-        Renderable r = new RectangleRenderable(BASE_GROUND_COLOR);
-        GameObject block = new GameObject(Vector2.ZERO, Vector2.ONES.mult(200), r);
-        block.setTag(GROUND_TAG);
-        gameObjects.addGameObject(block);
+
+        minX = getClosestSmallerNumDividesBySize(minX);
+        maxX = getClosestSmallerNumDividesBySize(maxX);
+
+        for (int x = minX; x <= maxX; x += Block.SIZE) {
+
+            int roundedHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
+
+            for (int i = 0; i < TERRAIN_DEPTH; i++) {
+
+                createBlock(x, roundedHeight);
+                roundedHeight += Block.SIZE;
+
+            }
+
+
+        }
+
 
     }
+
+    private void createBlock(int x, int y) {
+        Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+        GameObject block = new Block(new Vector2(x, y), renderable);
+        block.setTag(GROUND_TAG);
+        gameObjects.addGameObject(block);
+    }
+
+    /**
+     * Calculates the closest smaller num that divides by Block.SIZE
+     * @param x
+     * @return Closest num
+     */
+    private int getClosestSmallerNumDividesBySize(int x){
+
+        int remainder = x % Block.SIZE;
+
+        if (remainder < 0){
+            remainder += Block.SIZE;
+        }
+
+        return x - remainder;
+    }
+
+
 
 }

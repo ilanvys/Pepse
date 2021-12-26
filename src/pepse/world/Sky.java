@@ -11,7 +11,7 @@ import java.awt.*;
 public class Sky {
 
     private static final Color BASIC_SKY_COLOR = Color.decode("#80C6E5"); // todo should implement GameObject?
-    private static final String SKY_LAYER_TAG = "sky";
+    private static final String SKY_TAG = "sky";
 
     public static GameObject create(GameObjectCollection gameObjects,
                                     Vector2 windowDimensions,
@@ -24,7 +24,7 @@ public class Sky {
         );
 
         sky.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        sky.setTag(SKY_LAYER_TAG);
+        sky.setTag(SKY_TAG);
         gameObjects.addGameObject(sky, skyLayer);
 
         return sky;
