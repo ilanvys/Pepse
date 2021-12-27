@@ -52,12 +52,16 @@ public class PepseGameManager extends GameManager {
         // create night/day
         Night.create(this.gameObjects(), Layer.FOREGROUND, this.windowDimensions, 30.0F);
 
+        // crate sun
         GameObject sun = Sun.create(this.gameObjects(), Layer.BACKGROUND+2, this.windowDimensions, 30.0F);
+
+        // create sun halo
         GameObject sunHalo = SunHalo.create(this.gameObjects(), Layer.BACKGROUND+1, sun, new Color(255, 255, 0, 40));
         sunHalo.addComponent((deltaTime) -> {
             sunHalo.setCenter(sun.getCenter());
         });
 
+        // create trees
         Tree tree = new Tree(this.gameObjects(), this.windowDimensions, terrain);
         tree.createInRange(0,1920);
     }
