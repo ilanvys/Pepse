@@ -39,15 +39,16 @@ public class Terrain {
 
     public float groundHeightAt(float x) {
 
-        return 3 * Block.SIZE * ( (float) noise.noise(x)) + groundHeightAtX0;  // todo decide. keep the 3?
+        int roundedX = getClosestSmallerNumDividesByBlockSize((int) x) / Block.SIZE;
 
+        return 10 * Block.SIZE * ( (float) noise.noise(roundedX)) + groundHeightAtX0;  // todo keep 10?
     }
 
     public void createInRange(int minX, int maxX){
 
 
-        minX = getClosestSmallerNumDividesBySize(minX);
-        maxX = getClosestSmallerNumDividesBySize(maxX);
+        minX = getClosestSmallerNumDividesByBlockSize(minX);
+        maxX = getClosestSmallerNumDividesByBlockSize(maxX);
 
         for (int x = minX; x <= maxX; x += Block.SIZE) {
 
@@ -59,11 +60,7 @@ public class Terrain {
                 roundedHeight += Block.SIZE;
 
             }
-
-
         }
-
-
     }
 
     private void createBlock(int x, int y) {
@@ -78,7 +75,7 @@ public class Terrain {
      * @param x
      * @return Closest num
      */
-    private int getClosestSmallerNumDividesBySize(int x){
+    private int getClosestSmallerNumDividesByBlockSize(int x){
 
         int remainder = x % Block.SIZE;
 
@@ -88,7 +85,5 @@ public class Terrain {
 
         return x - remainder;
     }
-
-
 
 }
