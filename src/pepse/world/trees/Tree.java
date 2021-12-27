@@ -20,7 +20,7 @@ public class Tree {
     private final GameObjectCollection gameObjects;
     private final Vector2 windowDimensions;
     private final Terrain terrain;
-    private final Random rand = new Random(19);
+    private final Random rand = new Random();
 
     // TODO: is this the correct way to get the game objects?
     public Tree(GameObjectCollection gameObjects, Vector2 windowDimensions, Terrain terrain) {
@@ -30,11 +30,14 @@ public class Tree {
     }
 
     public void createInRange(int minX, int maxX) {
-        int initialNumOfTrees = rand.nextInt(1,6);
+//        int initialNumOfTrees = rand.nextInt(1,6);
+        int initialNumOfTrees = rand.nextInt(5) + 1;
         // TODO:  make sure indexes don't repeat
         for (int i = 0; i < initialNumOfTrees; i++) {
-            int treeLocation = rand.nextInt(minX, maxX);
-            int treeHeight = rand.nextInt(4, 12);
+//            int treeLocation = rand.nextInt(minX, maxX);
+            int treeLocation = rand.nextInt(maxX - minX) + minX;
+//            int treeHeight = rand.nextInt(4, 12);
+            int treeHeight = rand.nextInt(8) + 4;
             this.create(treeLocation, treeHeight);
         }
     }
@@ -76,7 +79,8 @@ public class Tree {
 
                 new ScheduledTask(
                         leafBlock,
-                        rand.nextInt(1,20),
+//                        rand.nextInt(1,20),
+                        rand.nextInt(19) + 1,
                         true,
                         () -> {
                             new Transition<Float>(
@@ -85,7 +89,8 @@ public class Tree {
                                     0f,
                                     5f,
                                     Transition.CUBIC_INTERPOLATOR_FLOAT,
-                                    rand.nextInt(3,10),
+//                                    rand.nextInt(3,10),
+                                    rand.nextInt(7) + 3,
                                     Transition.TransitionType.TRANSITION_LOOP,
                                     null
                             );
@@ -94,7 +99,8 @@ public class Tree {
 
                 new ScheduledTask(
                         leafBlock,
-                        rand.nextInt(1,20),
+//                        rand.nextInt(1,20),
+                        rand.nextInt(19) + 1,
                         true,
                         () -> {
                             new Transition<Float>(
@@ -103,7 +109,8 @@ public class Tree {
                                     -1f,
                                     4f,
                                     Transition.CUBIC_INTERPOLATOR_FLOAT,
-                                    rand.nextInt(3,10),
+//                                    rand.nextInt(3,10),
+                                    rand.nextInt(7) + 3,
                                     Transition.TransitionType.TRANSITION_LOOP,
                                     null
                             );
@@ -113,7 +120,8 @@ public class Tree {
 
                 new ScheduledTask(
                         leafBlock,
-                        rand.nextInt(1,20),
+//                        rand.nextInt(1,20),
+                        rand.nextInt(19) + 1,
                         true,
                         () -> {
                             new Transition<Float>(
@@ -122,7 +130,8 @@ public class Tree {
                                     -1f,
                                     4f,
                                     Transition.CUBIC_INTERPOLATOR_FLOAT,
-                                    rand.nextInt(3,10),
+//                                    rand.nextInt(3,10),
+                                    rand.nextInt(7) + 3,
                                     Transition.TransitionType.TRANSITION_LOOP,
                                     null
                             );
@@ -139,7 +148,8 @@ public class Tree {
     private void initLeafFallTask(GameObject leafBlock, Vector2 leafLocation) {
         leafBlock.renderer().setOpaqueness(1);
         leafBlock.setTopLeftCorner(leafLocation);
-        int FADEOUT_START = rand.nextInt(5,100); //TODO start form 10 to 100
+//        int FADEOUT_START = rand.nextInt(5,100); //TODO start form 10 to 100
+        int FADEOUT_START = rand.nextInt(95) + 5; //TODO start form 10 to 100
 
         new ScheduledTask(
             leafBlock,
@@ -147,7 +157,8 @@ public class Tree {
             false,
             () -> {
                 leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> {
-                    int AFTERLIFE = rand.nextInt(2,5); //TODO: 10-40
+//                    int AFTERLIFE = rand.nextInt(2,5); //TODO: 10-40
+                    int AFTERLIFE = rand.nextInt(3); //TODO: 10-40
                     initLeafAfterlifeWaitTask(leafBlock, leafLocation, AFTERLIFE);
                     leafBlock.transform().setVelocity(0, 0);
                 });
@@ -188,7 +199,8 @@ public class Tree {
                 0f,
                 10f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
-                rand.nextInt(1,4),
+//                rand.nextInt(1,4),
+                rand.nextInt(3) + 1,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null
         );
