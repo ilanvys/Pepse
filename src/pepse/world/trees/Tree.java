@@ -41,8 +41,8 @@ public class Tree {
     }
 
     public void create(int treeLocation, int treeHeight) {
-//        int groundHeight = (int) (windowDimensions.y() - 0); // TODO: Terrain.groundHeightAt
-        int groundHeight = (int) terrain.groundHeightAt(treeLocation); // TODO: Terrain.groundHeightAt
+        int groundHeight = (int) (terrain.groundHeightAt(treeLocation)/30)*30 - 30; // TODO: use block sze instead of
+        System.out.println(groundHeight);
         // add root
         for (int i = 0; i < treeHeight; i++) { //TODO: tree height?
             GameObject rootBlock = new GameObject(
@@ -148,13 +148,19 @@ public class Tree {
             false,
             () -> {
                 leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> {
-                    int AFTERLIFE = rand.nextInt(5,15); //TODO: 10-40
+                    int AFTERLIFE = rand.nextInt(2,5); //TODO: 10-40
                     initLeafAfterlifeWaitTask(leafBlock, leafLocation, AFTERLIFE);
                     leafBlock.transform().setVelocity(0, 0);
                 });
                 leafBlock.transform().setVelocityY(30);
                 //TODO: schedule task before
-                initLeafVerticalFallTransition(leafBlock);
+                new ScheduledTask(
+                        leafBlock,
+                        3,
+                        false,
+                        () -> {
+                            initLeafVerticalFallTransition(leafBlock);
+                        });
             });
     }
 
@@ -173,21 +179,17 @@ public class Tree {
                 leafBlock,
                 (a) -> {
                     // TODO: fix velocity not updating
-                    if(a == 1) {
-                        System.out.println("1");
-                        leafBlock.transform().setVelocityX(0);
-                        leafBlock.transform().setVelocityX(30);
+                    if(a < 3) {
+                        leafBlock.transform().setVelocity(15, 30);
                     }
-                    if(a == 0) {
-                        System.out.println("0");
-                        leafBlock.transform().setVelocityX(0);                        leafBlock.transform().setVelocityX(-30);
-                        leafBlock.transform().setVelocityX(-30);
+                    if(a > 8) {
+                        leafBlock.transform().setVelocity(-15, 30);
                     }
                 },
                 0f,
-                1f,
+                10f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
-                1,
+                rand.nextInt(1,4),
                 Transition.TransitionType.TRANSITION_LOOP,
                 null
         );
