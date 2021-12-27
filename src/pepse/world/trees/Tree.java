@@ -20,7 +20,7 @@ public class Tree {
     private final GameObjectCollection gameObjects;
     private final Vector2 windowDimensions;
     private final Terrain terrain;
-    private final Random rand = new Random();
+    private final Random rand = new Random(19);
 
     // TODO: is this the correct way to get the game objects?
     public Tree(GameObjectCollection gameObjects, Vector2 windowDimensions, Terrain terrain) {
@@ -31,7 +31,6 @@ public class Tree {
 
     public void createInRange(int minX, int maxX) {
         int initialNumOfTrees = rand.nextInt(1,6);
-//        int initialNumOfTrees = 1;
         // TODO:  make sure indexes don't repeat
         for (int i = 0; i < initialNumOfTrees; i++) {
             int treeLocation = rand.nextInt(minX, maxX);
