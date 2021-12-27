@@ -15,6 +15,7 @@ import java.util.Random;
 public class Tree {
     private final Color rootColor = new Color(100, 50, 20);
     private final Color leafColor = new Color(50, 200, 30);
+    private final int FADEOUT_TIME = 10; // TODO set to 15
     private final GameObjectCollection gameObjects;
     private final Vector2 windowDimensions;
     private final Random rand = new Random();
@@ -26,7 +27,8 @@ public class Tree {
     }
 
     public void createInRange(int minX, int maxX) {
-        int initialNumOfTrees = rand.nextInt(1,6);
+//        int initialNumOfTrees = rand.nextInt(1,6);
+        int initialNumOfTrees = 1;
         // TODO:  make sure indexes don't repeat
         for (int i = 0; i < initialNumOfTrees; i++) {
             int treeLocation = rand.nextInt(minX, maxX);
@@ -68,23 +70,10 @@ public class Tree {
                 leafBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                 leafBlock.setTag("leafBlock");
 
-                //leaf movement in the wind
-//                leafBlock.renderer().setRenderableAngle(10);
-
-
-
-                // TODO: decide on the range for fade
-//                int FADEOUT_TIME = rand.nextInt(1,100);
-//                leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> {
-//                    leafBlock.setTopLeftCorner(leafLocation);
-//                    leafBlock.renderer().setOpaqueness(1);
-//                });
-//                leafBlock.transform().setVelocityY(30);
-
 
                 new ScheduledTask(
                         leafBlock,
-                        rand.nextInt(1,10),
+                        rand.nextInt(1,20),
                         true,
                         () -> {
                             new Transition<Float>(
@@ -102,22 +91,102 @@ public class Tree {
 
                 new ScheduledTask(
                         leafBlock,
-                        rand.nextInt(1,10),
+                        rand.nextInt(1,20),
                         true,
                         () -> {
                             new Transition<Float>(
                                     leafBlock,
                                     (a) -> leafBlock.setDimensions(new Vector2(Block.SIZE+a, Block.SIZE+a)),
-                                    0f,
-                                    3f,
+                                    -1f,
+                                    4f,
                                     Transition.CUBIC_INTERPOLATOR_FLOAT,
                                     rand.nextInt(3,10),
                                     Transition.TransitionType.TRANSITION_LOOP,
                                     null
                             );
                         });
+
+
+
+                new ScheduledTask(
+                        leafBlock,
+                        rand.nextInt(1,20),
+                        true,
+                        () -> {
+                            new Transition<Float>(
+                                    leafBlock,
+                                    (a) -> leafBlock.setDimensions(new Vector2(Block.SIZE+a, Block.SIZE+a)),
+                                    -1f,
+                                    4f,
+                                    Transition.CUBIC_INTERPOLATOR_FLOAT,
+                                    rand.nextInt(3,10),
+                                    Transition.TransitionType.TRANSITION_LOOP,
+                                    null
+                            );
+                        });
+
+                // TODO: decide on the range for fade
+                initLeafFallTask(leafBlock, leafLocation);
+
                 gameObjects.addGameObject(leafBlock);
             }
         }
     }
+
+    private void initLeafFallTask(GameObject leafBlock, Vector2 leafLocation) {
+        leafBlock.renderer().setOpaqueness(1);
+        leafBlock.setTopLeftCorner(leafLocation);
+        int FADEOUT_START = rand.nextInt(5,100); //TODO start form 10 to 100
+
+        new ScheduledTask(
+            leafBlock,
+            FADEOUT_START,
+            false,
+            () -> {
+                leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> {
+                    int AFTERLIFE = rand.nextInt(5,15); //TODO: 10-40
+                    initLeafAfterlifeWaitTask(leafBlock, leafLocation, AFTERLIFE);
+                    leafBlock.transform().setVelocity(0, 0);
+                });
+                leafBlock.transform().setVelocityY(30);
+                //TODO: schedule task before
+                initLeafVerticalFallTransition(leafBlock);
+            });
+    }
+
+    private void initLeafAfterlifeWaitTask(GameObject leafBlock, Vector2 leafLocation, int afterlifeTime) {
+        new ScheduledTask(
+            leafBlock,
+            afterlifeTime,
+            false,
+            () -> {
+                initLeafFallTask(leafBlock, leafLocation);
+            });
+    }
+
+    private void initLeafVerticalFallTransition(GameObject leafBlock) {
+        new Transition<Float>(
+                leafBlock,
+                (a) -> {
+                    // TODO: fix velocity not updating
+                    if(a == 1) {
+                        System.out.println("1");
+                        leafBlock.transform().setVelocityX(0);
+                        leafBlock.transform().setVelocityX(30);
+                    }
+                    if(a == 0) {
+                        System.out.println("0");
+                        leafBlock.transform().setVelocityX(0);                        leafBlock.transform().setVelocityX(-30);
+                        leafBlock.transform().setVelocityX(-30);
+                    }
+                },
+                0f,
+                1f,
+                Transition.CUBIC_INTERPOLATOR_FLOAT,
+                1,
+                Transition.TransitionType.TRANSITION_LOOP,
+                null
+        );
+    }
+
 }
