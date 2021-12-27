@@ -8,6 +8,7 @@ import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import pepse.world.Block;
+import pepse.world.Terrain;
 
 import java.awt.*;
 import java.util.Random;
@@ -18,17 +19,19 @@ public class Tree {
     private final int FADEOUT_TIME = 10; // TODO set to 15
     private final GameObjectCollection gameObjects;
     private final Vector2 windowDimensions;
+    private final Terrain terrain;
     private final Random rand = new Random();
 
     // TODO: is this the correct way to get the game objects?
-    public Tree(GameObjectCollection gameObjects, Vector2 windowDimensions) {
+    public Tree(GameObjectCollection gameObjects, Vector2 windowDimensions, Terrain terrain) {
         this.gameObjects = gameObjects;
         this.windowDimensions = windowDimensions;
+        this.terrain = terrain;
     }
 
     public void createInRange(int minX, int maxX) {
-//        int initialNumOfTrees = rand.nextInt(1,6);
-        int initialNumOfTrees = 1;
+        int initialNumOfTrees = rand.nextInt(1,6);
+//        int initialNumOfTrees = 1;
         // TODO:  make sure indexes don't repeat
         for (int i = 0; i < initialNumOfTrees; i++) {
             int treeLocation = rand.nextInt(minX, maxX);
@@ -38,7 +41,8 @@ public class Tree {
     }
 
     public void create(int treeLocation, int treeHeight) {
-        int groundHeight = (int) (windowDimensions.y() - 0); // TODO: Terrain.groundHeightAt
+//        int groundHeight = (int) (windowDimensions.y() - 0); // TODO: Terrain.groundHeightAt
+        int groundHeight = (int) terrain.groundHeightAt(treeLocation); // TODO: Terrain.groundHeightAt
         // add root
         for (int i = 0; i < treeHeight; i++) { //TODO: tree height?
             GameObject rootBlock = new GameObject(
@@ -61,7 +65,7 @@ public class Tree {
 
         for (int i = leavesCol; i <= leavesCol + leavesSize; i+=Block.SIZE) {
             for (int j = leavesRow; j <= leavesRow + leavesSize; j+=Block.SIZE) {
-                Vector2 leafLocation = new Vector2(i, windowDimensions.y() - j);
+                Vector2 leafLocation = new Vector2(i, groundHeight - j);
                 GameObject leafBlock = new GameObject(
                         leafLocation,
                         new Vector2(Block.SIZE, Block.SIZE),
