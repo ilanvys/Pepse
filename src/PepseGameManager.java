@@ -6,6 +6,7 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
+import pepse.world.Avatar;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
@@ -45,7 +46,7 @@ public class PepseGameManager extends GameManager {
 
         // create terrain
         Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS,
-                windowController.getWindowDimensions(), 19); // todo use real seed
+                windowController.getWindowDimensions(), 20); // todo use real seed
 
         terrain.createInRange(0,1920); // todo infinite world
 
@@ -64,6 +65,11 @@ public class PepseGameManager extends GameManager {
         // create trees
         Tree tree = new Tree(this.gameObjects(), this.windowDimensions, terrain);
         tree.createInRange(0,1920);
+
+        // create avatar
+        Vector2 initPos = new Vector2(600, 400); // todo make const
+        Avatar avatar = Avatar.create(gameObjects(), Layer.DEFAULT, initPos, inputListener, imageReader);
+
     }
 
     public static void main(String[] args) {
