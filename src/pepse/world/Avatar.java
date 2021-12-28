@@ -3,6 +3,7 @@ package pepse.world;
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
+import danogl.components.CoordinateSpace;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.RectangleRenderable;
@@ -90,6 +91,7 @@ public class Avatar extends GameObject {
 
             if (energy > 0 && inputListener.isKeyPressed(KeyEvent.VK_SHIFT)){
                 transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
+
                 energy -= 0.5;
             }
 
@@ -111,8 +113,9 @@ public class Avatar extends GameObject {
         this.energyRenderable = new TextRenderable(String.format(ENERGY_STRING, (int) energy));
         GameObject energyCounter = new GameObject(ENERGY_COUNTER_POS, ENERGY_COUNTER_DIMENSIONS,
                 energyRenderable);
-
+        energyCounter.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         gameObjects.addGameObject(energyCounter, Layer.UI);
+
     }
 
 }

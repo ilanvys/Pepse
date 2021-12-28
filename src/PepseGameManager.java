@@ -5,6 +5,7 @@ import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
+import danogl.gui.rendering.Camera;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
 import pepse.world.Terrain;
@@ -64,10 +65,11 @@ public class PepseGameManager extends GameManager {
         tree.createInRange(0,1920);
 
         // create avatar
-        Vector2 initPos = new Vector2(600, 400); // todo make const
+        Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
         Avatar avatar = Avatar.create(gameObjects(), Layer.DEFAULT, initPos, inputListener, imageReader);
 
-
+        // set camera
+        setCamera(new Camera(avatar, Vector2.ZERO, windowDimensions, windowDimensions));
 
     }
 
