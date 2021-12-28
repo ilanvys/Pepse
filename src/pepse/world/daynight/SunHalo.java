@@ -13,15 +13,16 @@ public class SunHalo {
             GameObjectCollection gameObjects,
             int layer,
             GameObject sun,
-            Color color
-    ) {
+            Color color ) {
         GameObject sunHalo = new GameObject(
                 Vector2.ZERO,
                 new Vector2(100, 100),
                 new OvalRenderable(color));
+
         sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        gameObjects.addGameObject(sunHalo, layer);
         sunHalo.setTag("sunHalo");
+        gameObjects.addGameObject(sunHalo, layer);
+
         return sunHalo;
     }
 
@@ -30,8 +31,5 @@ public class SunHalo {
         void update(float deltaTime);
     }
 
-    public void addComponent(Component component) {
-    }
-//    public void addComponent() {
-//    }
+    public void addComponent(Component component) {}
 }

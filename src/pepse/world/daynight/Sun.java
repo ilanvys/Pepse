@@ -5,28 +5,29 @@ import danogl.collisions.GameObjectCollection;
 import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
 import danogl.gui.rendering.OvalRenderable;
-import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 
 import java.awt.*;
-import java.util.function.Consumer;
 
 public class Sun {
     private static GameObject sun;
+
     public static GameObject create(
             GameObjectCollection gameObjects,
             int layer,
             Vector2 windowDimentions,
-            float cycleLength
-    ) {
+            float cycleLength) {
+
         sun = new GameObject(
                 new Vector2(windowDimentions.x()/2, windowDimentions.y()/4),
                 new Vector2(50,50),
                 new OvalRenderable(Color.yellow));
-        sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        gameObjects.addGameObject(sun, layer);
-        sun.setTag("sun");
 
+        sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        sun.setTag("sun");
+        gameObjects.addGameObject(sun, layer);
+
+        // create sun movement transition
         new Transition<Float>(
                 sun,
                 (a) -> {

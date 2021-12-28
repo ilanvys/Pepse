@@ -63,7 +63,7 @@ public class PepseGameManager extends GameManager {
         });
 
         // create trees
-        Tree tree = new Tree(this.gameObjects(), this.windowDimensions, terrain);
+        Tree tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed);
         tree.createInRange(0,1920);
 
         // create avatar

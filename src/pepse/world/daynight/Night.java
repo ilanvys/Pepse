@@ -10,20 +10,23 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 public class Night {
-    private static Float MIDNIGHT_OPACITY = 0.5f;
+    private static final Float MIDNIGHT_OPACITY = 0.5f;
+
     public static GameObject create(
             GameObjectCollection gameObjects,
             int layer,
             Vector2 windowDimentions,
-            float cycleLength
-    ) {
+            float cycleLength) {
+
         GameObject night = new GameObject(
                 Vector2.ZERO,
                 windowDimentions,
                 new RectangleRenderable(Color.BLACK));
+
         night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         gameObjects.addGameObject(night, layer);
 
+        // create the day-night transition
         new Transition<Float>(
                 night,
                 night.renderer()::setOpaqueness,
@@ -34,6 +37,7 @@ public class Night {
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 null
         );
+
         return night;
     }
 }
