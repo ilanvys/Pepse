@@ -2,6 +2,7 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.components.CoordinateSpace;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
@@ -83,7 +84,7 @@ public class Tree {
                 createLeafAnimation(leafBlock);
                 createLeafFallTask(leafBlock, originalLeafLocation);
 
-                gameObjects.addGameObject(leafBlock);
+                gameObjects.addGameObject(leafBlock, Layer.DEFAULT+1);
             }
         }
     }
@@ -147,7 +148,7 @@ public class Tree {
             rootBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
             rootBlock.setTag("rootBlock");
 
-            gameObjects.addGameObject(rootBlock);
+            gameObjects.addGameObject(rootBlock, Layer.DEFAULT);
         }
     }
 

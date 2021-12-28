@@ -2,6 +2,7 @@ package pepse.world;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -68,7 +69,7 @@ public class Terrain {
         Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
         GameObject block = new Block(new Vector2(x, y), renderable);
         block.setTag(GROUND_TAG);
-        gameObjects.addGameObject(block);
+        gameObjects.addGameObject(block, Layer.DEFAULT);
     }
 
     /**
