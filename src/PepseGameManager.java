@@ -67,6 +67,8 @@ public class PepseGameManager extends GameManager {
         Vector2 initPos = new Vector2(600, 400); // todo make const
         Avatar avatar = Avatar.create(gameObjects(), Layer.DEFAULT, initPos, inputListener, imageReader);
 
+
+
     }
 
     public static void main(String[] args) {
