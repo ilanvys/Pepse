@@ -58,9 +58,6 @@ public class PepseGameManager extends GameManager {
 
         // create sun halo
         GameObject sunHalo = SunHalo.create(this.gameObjects(), Layer.BACKGROUND+1, sun, new Color(255, 255, 0, 40));
-        sunHalo.addComponent((deltaTime) -> {
-            sunHalo.setCenter(sun.getCenter());
-        });
 
         // create trees
         Tree tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed);
