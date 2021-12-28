@@ -28,6 +28,9 @@ public class PepseGameManager extends GameManager {
     private WindowController windowController;
     private UserInputListener inputListener;
     private SoundReader soundReader;
+    private Avatar avatar;
+    private Terrain terrain;
+    private int worldBuiltPointer = 0;  // relative to avatar's pos!!!
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
@@ -38,6 +41,10 @@ public class PepseGameManager extends GameManager {
         this.inputListener = inputListener;
         this.soundReader = soundReader;
 
+        // todo erase
+        windowController.setTargetFramerate(30);
+
+
         // seed
         Random random = new Random();
         int seed = random.nextInt(OPTIONAL_SEEDS);
@@ -46,10 +53,9 @@ public class PepseGameManager extends GameManager {
         pepse.world.Sky.create(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
 
         // create terrain
-        Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS,
+        this.terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS,
                 windowController.getWindowDimensions(), 20); // todo use real seed
 
-        terrain.createInRange(0,1920); // todo infinite world
 
         // create night/day
         Night.create(this.gameObjects(), Layer.FOREGROUND, this.windowDimensions, 30.0F);
@@ -66,11 +72,64 @@ public class PepseGameManager extends GameManager {
 
         // create avatar
         Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
-        Avatar avatar = Avatar.create(gameObjects(), Layer.DEFAULT, initPos, inputListener, imageReader);
+        this.avatar = Avatar.create(gameObjects(), Layer.DEFAULT, initPos, inputListener, imageReader);
 
         // set camera
         setCamera(new Camera(avatar, Vector2.ZERO, windowDimensions, windowDimensions));
 
+        int windowDimX = (int) windowDimensions.x();
+        terrain.createInRange(-windowDimX, 2*windowDimX); // todo infinite
+        // world
+        worldBuiltPointer = (int) avatar.getCenter().x();
+
+
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+
+        int avatarXPos = (int) avatar.getCenter().x();
+        int windowXDim = (int) windowDimensions.x();
+
+        if (worldBuiltPointer + windowXDim / 2 < avatarXPos) {
+            extendWorldToRight(avatarXPos, windowXDim);
+        }
+        if (avatarXPos < worldBuiltPointer - windowXDim / 2) {
+            extendWorldToLeft(avatarXPos, windowXDim);
+        }
+
+
+    }
+
+    private void extendWorldToRight(int avatarXPos, int windowXDim) {
+
+        // adding world to right
+        terrain.createInRange(worldBuiltPointer + windowXDim, worldBuiltPointer + (int) (1.5 * windowXDim));
+
+        // removing world from left
+        for (GameObject obj : gameObjects()) {
+            if  (obj.getCenter().x() < worldBuiltPointer - windowXDim / 2) {
+                gameObjects().removeGameObject(obj, Layer.DEFAULT);
+                gameObjects().removeGameObject(obj, Layer.DEFAULT - 10); // TODO CONST LAYER!!!
+            }
+        }
+        worldBuiltPointer = avatarXPos;
+    }
+
+    private void extendWorldToLeft(int avatarXPos, int windowXDim) {
+
+        // adding world to left
+        terrain.createInRange(worldBuiltPointer - (int) (1.5 * windowXDim), worldBuiltPointer - windowXDim);
+
+        // removing world from right
+        for (GameObject obj : gameObjects()) {
+            if (obj.getCenter().x() > worldBuiltPointer + windowXDim / 2) {
+                gameObjects().removeGameObject(obj, Layer.DEFAULT);
+                gameObjects().removeGameObject(obj, Layer.DEFAULT - 10); // TODO CONST LAYER!!!
+            }
+        }
+        worldBuiltPointer = avatarXPos;  // updating world pointer
     }
 
     public static void main(String[] args) {

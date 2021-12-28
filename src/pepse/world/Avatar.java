@@ -21,7 +21,7 @@ public class Avatar extends GameObject {
     private static final int VELOCITY_JUMP = 300;
     private static final int GRAVITY = 300;
     private static final Vector2 DIMENSIONS = new Vector2(50,50);
-    private static final int MAX_ENERGY = 5;  // todo change to 100
+    private static final int MAX_ENERGY = 100;  // todo change to 100
     private static final String ENERGY_STRING = "Energy: %d";
     private static final Vector2 ENERGY_COUNTER_POS = new Vector2(30,30);
     private static final Vector2 ENERGY_COUNTER_DIMENSIONS = new Vector2(100,30);
@@ -37,7 +37,7 @@ public class Avatar extends GameObject {
      * Construct a new GameObject instance.
      * @param inputListener // todo
      */
-    public Avatar(UserInputListener inputListener, GameObjectCollection gameObjects) { //todo inputListener in ctr??
+    public Avatar(UserInputListener inputListener, GameObjectCollection gameObjects) {
         super(Vector2.ZERO, DIMENSIONS, new RectangleRenderable(Color.BLACK));
         this.gameObjects = gameObjects;
         this.inputListener = inputListener;
@@ -53,16 +53,14 @@ public class Avatar extends GameObject {
 
 //        Renderable avatarImage = imageReader.readImage() // todo
 
-        Renderable avatarImage = new RectangleRenderable(Color.BLACK);
+        Renderable avatarImage = new RectangleRenderable(Color.BLACK);  // todo erase when i put img
 
         Avatar avatar = new Avatar(inputListener, gameObjects);
         avatar.setTopLeftCorner(topLeftCorner);
         avatar.transform().setAccelerationY(GRAVITY);
         avatar.renderer().setRenderable(avatarImage);
         avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
-
         avatar.createEnergyCounter();
-
         gameObjects.addGameObject(avatar, layer);
 
         return avatar;
@@ -91,8 +89,7 @@ public class Avatar extends GameObject {
 
             if (energy > 0 && inputListener.isKeyPressed(KeyEvent.VK_SHIFT)){
                 transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
-
-                energy -= 0.5;
+                energy -= 0.5;  // reduce energy while flying
             }
 
             if (transform().getVelocity().y() == 0){
@@ -111,7 +108,8 @@ public class Avatar extends GameObject {
     private void createEnergyCounter(){
 
         this.energyRenderable = new TextRenderable(String.format(ENERGY_STRING, (int) energy));
-        GameObject energyCounter = new GameObject(ENERGY_COUNTER_POS, ENERGY_COUNTER_DIMENSIONS,
+        GameObject energyCounter = new GameObject(ENERGY_COUNTER_POS,
+                ENERGY_COUNTER_DIMENSIONS,
                 energyRenderable);
         energyCounter.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         gameObjects.addGameObject(energyCounter, Layer.UI);
