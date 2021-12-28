@@ -26,7 +26,7 @@ public class SunHalo {
             Color color ) {
         GameObject sunHalo = new GameObject(
                 Vector2.ZERO,
-                new Vector2(100, 100),
+                new Vector2(250, 250),
                 new OvalRenderable(color));
 
         sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);

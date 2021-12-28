@@ -3,6 +3,7 @@ package pepse.world.daynight;
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.components.CoordinateSpace;
+import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
@@ -36,19 +37,27 @@ public class Night {
                 new RectangleRenderable(Color.BLACK));
 
         night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        night.renderer().setOpaqueness(0);
         gameObjects.addGameObject(night, layer);
 
         // create the day-night transition
-        new Transition<Float>(
+        new ScheduledTask(
                 night,
-                night.renderer()::setOpaqueness,
-                0f,
-                MIDNIGHT_OPACITY,
-                Transition.CUBIC_INTERPOLATOR_FLOAT,
                 cycleLength/2,
-                Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
-                null
-        );
+                false,
+                () -> {
+                    new Transition<Float>(
+                            night,
+                            night.renderer()::setOpaqueness,
+                            0f,
+                            MIDNIGHT_OPACITY,
+                            Transition.CUBIC_INTERPOLATOR_FLOAT,
+                            cycleLength,
+                            Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
+                            null
+                    );
+                });
+
 
         return night;
     }

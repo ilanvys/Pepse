@@ -11,7 +11,6 @@ import java.awt.*;
 
 public class Sun {
     private static GameObject sun;
-
     /**
      * This function creates a yellow circle that moves in
      * the sky in an elliptical path (in camera coordinates).
@@ -29,35 +28,51 @@ public class Sun {
             float cycleLength) {
 
         sun = new GameObject(
-                new Vector2(windowDimensions.x()/2, windowDimensions.y()/4),
-                new Vector2(50,50),
+                new Vector2(windowDimensions.x()/4, windowDimensions.y()/2),
+                new Vector2(100, 100),
                 new OvalRenderable(Color.yellow));
 
         sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         sun.setTag("sun");
-        gameObjects.addGameObject(sun, layer);
+        createSunTransition(windowDimensions, cycleLength);
 
-        // create sun movement transition
-        new Transition<Float>(
-                sun,
-                (a) -> {
-//                  TODO:  Make it go round
-                    sun.setCenter(sun.getCenter().add(Vector2.RIGHT));
-                },
-                0f,
-                360f,
-                Transition.CUBIC_INTERPOLATOR_FLOAT,
-                cycleLength/2,
-                Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
-                null
-        );
+        gameObjects.addGameObject(sun, layer);
 
         return sun;
     }
 
+    /**
+     * This method initiates the Transition that makes the sun circle around
+     * @param windowDimensions The dimensions of the windows.
+     * @param cycleLength The amount of seconds it should take the created game
+     *                    object to complete a full cycle.
+     */
+    private static void createSunTransition(Vector2 windowDimensions, float cycleLength) {
+        float startPositionX = windowDimensions.x()/4;
+        float intervalX = (3*windowDimensions.x()/4 - windowDimensions.x()/4) / 360;
+        float intervalY = (windowDimensions.y()/3) / 360;
 
-
-//    private void calcSunPosition(Consumer<Float>  angleInSky) {
-//        sun.setCenter(sun.getCenter().add(Vector2.RIGHT));
-//    }
+        // create sun movement transition
+        new Transition<Float>(
+                sun,
+                (val) -> {
+                    if(val <= 180) {
+                        sun.setCenter(new Vector2(
+                                startPositionX + intervalX*val,
+                                sun.getCenter().y() - intervalY));
+                    }
+                    else {
+                        sun.setCenter(new Vector2(
+                                startPositionX + intervalX*val,
+                                sun.getCenter().y() + intervalY));
+                    }
+                },
+                0f,
+                360f,
+                Transition.CUBIC_INTERPOLATOR_FLOAT,
+                cycleLength,
+                Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
+                null
+        );
+    }
 }
