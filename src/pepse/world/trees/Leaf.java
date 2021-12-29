@@ -7,6 +7,9 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 public class Leaf extends GameObject {
+
+    private static final String LEAF_BLOCK_TAG = "leafBlock";
+
     //TODO: add documentation
     /**
      * Construct a new GameObject instance.
@@ -18,8 +21,7 @@ public class Leaf extends GameObject {
      */
     public Leaf(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
         super(topLeftCorner, dimensions, renderable);
-        this.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        this.setTag("leafBlock");
+        this.setTag(LEAF_BLOCK_TAG);
     }
 
 //    @Override
