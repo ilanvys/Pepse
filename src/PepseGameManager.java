@@ -32,7 +32,7 @@ public class PepseGameManager extends GameManager {
     private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
     private static final int AVATAR_LAYER = Layer.DEFAULT;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
-    public int LEAVES_LAYER = Layer.DEFAULT;
+    public int LEAVES_LAYER = Layer.DEFAULT - 4;
     public int ROOT_LAYER = Layer.DEFAULT - 5;
 
     // TAGS  todo erase what were not using. notice its only a name consists with tag name given in class
@@ -81,7 +81,6 @@ public class PepseGameManager extends GameManager {
         this.terrain = new Terrain(gameObjects(), UPPER_TERRAIN_LAYER,
                 windowController.getWindowDimensions(), 20); // todo use real seed
 
-
         // create night/day
         Night.create(this.gameObjects(), NIGHT_LAYER, this.windowDimensions, DAY_CYCLE_LENGTH);
 
@@ -113,7 +112,6 @@ public class PepseGameManager extends GameManager {
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
 //        System.out.println(gameObjects().layers().doLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10));
 
-
     }
 
     @Override
@@ -130,23 +128,15 @@ public class PepseGameManager extends GameManager {
             extendWorldToLeft(avatarXPos, windowXDim);
         }
 
-
     }
 
     private void removeObjectFromItsLayer(GameObject obj){
         switch (obj.getTag()) {
-            case UPPER_TERRAIN_TAG:
-                gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
-                break;
-            case LOWER_TERRAIN_TAG:
-                gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
-                break;
-            case ROOT_TAG:
-                gameObjects().removeGameObject(obj, ROOT_LAYER);
-                break;
-            case LEAF_BLOCK_TAG:
-                gameObjects().removeGameObject(obj, LEAVES_LAYER);
-                break;
+            case UPPER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
+            case LOWER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
+            case ROOT_TAG -> gameObjects().removeGameObject(obj, ROOT_LAYER);
+            case LEAF_BLOCK_TAG -> gameObjects().removeGameObject(obj, LEAVES_LAYER);
+
             // TODO general obj?
         }
         }
