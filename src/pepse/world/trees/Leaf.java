@@ -28,8 +28,8 @@ public class Leaf extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (other instanceof Block){
-            System.out.println("LEAF COLLIDED WITH " + other.getTag());
-        }
+//        if (other instanceof Block){
+//            System.out.println("LEAF COLLIDED WITH " + other.getTag());
+//        }
     }
 }

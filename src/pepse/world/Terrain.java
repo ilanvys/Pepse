@@ -58,7 +58,6 @@ public class Terrain {
         for (int x = minX; x <= maxX; x += Block.SIZE) {
 
             int roundedHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
-
             for (int i = 0; i < TERRAIN_DEPTH; i++) {
                 Block block = createBlock(x, roundedHeight);
                 if (i < 2){

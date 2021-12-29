@@ -25,7 +25,7 @@ public class Avatar extends GameObject {
     private static final int VELOCITY_JUMP = 300;
     private static final int GRAVITY = 300;
     private static final Vector2 DIMENSIONS = new Vector2(50,50);
-    private static final int MAX_ENERGY = 100;  // todo change to 100
+    private static final int MAX_ENERGY = 100;
     private static final String ENERGY_STRING = "Energy: %d";
     private static final Vector2 ENERGY_COUNTER_POS = new Vector2(30,30);
     private static final Vector2 ENERGY_COUNTER_DIMENSIONS = new Vector2(100,30);

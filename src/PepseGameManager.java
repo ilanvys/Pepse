@@ -15,6 +15,7 @@ import pepse.world.daynight.SunHalo;
 import pepse.world.trees.Tree;
 
 import java.awt.*;
+import java.util.Objects;
 import java.util.Random;
 
 public class PepseGameManager extends GameManager {
@@ -56,7 +57,7 @@ public class PepseGameManager extends GameManager {
     private Avatar avatar;
     private Terrain terrain;
     private Tree tree;
-    private int worldBuiltPointer = 0;  // relative to avatar's pos!!!
+    private int worldBuiltPointer = 0;  // points which part (x axis) of the wold is currently built
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
@@ -66,9 +67,6 @@ public class PepseGameManager extends GameManager {
         this.windowController = windowController;
         this.inputListener = inputListener;
         this.soundReader = soundReader;
-
-        // todo erase
-//        windowController.setTargetFramerate(30);
 
         // seed
         Random random = new Random();
@@ -89,28 +87,23 @@ public class PepseGameManager extends GameManager {
 
         // create sun halo
         GameObject sunHalo = SunHalo.create(this.gameObjects(), SUN_HALO_LAYER, sun, SUN_COLOR);
-        // const
 
         // create trees
         this.tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed, ROOT_LAYER, LEAVES_LAYER);
 
-        // create avatar
+        // create avatar & set camera
         Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
         this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, initPos, inputListener, imageReader);
-
-        // set camera
         setCamera(new Camera(avatar, Vector2.ZERO, windowDimensions, windowDimensions));
 
         // build world
         int windowDimX = (int) windowDimensions.x();
         terrain.createInRange(-windowDimX, 2*windowDimX);
-        tree.createInRange(-windowDimX, 2*windowDimX);
+        tree.createInRange(0, windowDimX);
         worldBuiltPointer = (int) avatar.getCenter().x();
 
-
-        // TODO REFACTOR THIS
+        // Differentiating layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
-//        System.out.println(gameObjects().layers().doLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10));
 
     }
 
@@ -119,12 +112,12 @@ public class PepseGameManager extends GameManager {
         super.update(deltaTime);
 
         int avatarXPos = (int) avatar.getCenter().x();
-        int windowXDim = (int) windowDimensions.x()/2; // todo erase /2
+        int windowXDim = (int) windowDimensions.x();
 
-        if (worldBuiltPointer + windowXDim / 2 < avatarXPos) {
+        if (worldBuiltPointer + windowXDim / 2 < avatarXPos) {  // avatar had walked right enough
             extendWorldToRight(avatarXPos, windowXDim);
         }
-        if (avatarXPos < worldBuiltPointer - windowXDim / 2) {
+        if (avatarXPos < worldBuiltPointer - windowXDim / 2) {  // avatar had walked left enough
             extendWorldToLeft(avatarXPos, windowXDim);
         }
 
@@ -136,9 +129,7 @@ public class PepseGameManager extends GameManager {
             case LOWER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
             case ROOT_TAG -> gameObjects().removeGameObject(obj, ROOT_LAYER);
             case LEAF_BLOCK_TAG -> gameObjects().removeGameObject(obj, LEAVES_LAYER);
-
-            // TODO general obj?
-        }
+            }
         }
 
     private void extendWorldToRight(int avatarXPos, int windowXDim) {
@@ -148,7 +139,6 @@ public class PepseGameManager extends GameManager {
         int maxX = worldBuiltPointer + (int) (1.5 * windowXDim);
         terrain.createInRange(minX, maxX);
         tree.createInRange(minX, maxX);
-
 
         // removing world from left
         for (GameObject obj : gameObjects()) {
@@ -160,7 +150,6 @@ public class PepseGameManager extends GameManager {
     }
 
     private void extendWorldToLeft(int avatarXPos, int windowXDim) {
-
 
         // adding world to left
         int minX = worldBuiltPointer - (int) (1.5 * windowXDim);
@@ -180,7 +169,7 @@ public class PepseGameManager extends GameManager {
 
     public static void main(String[] args) {
 
-    new PepseGameManager().run();
+        new PepseGameManager().run();
 
     }
 }

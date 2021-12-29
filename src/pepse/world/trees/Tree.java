@@ -11,23 +11,29 @@ import pepse.world.Block;
 import pepse.world.Terrain;
 
 import java.awt.*;
+import java.util.Objects;
 import java.util.Random;
 
 public class Tree {
+
+    // CONSTANTS
     private final Color ROOT_COLOR = new Color(100, 50, 20);
     private final Color LEAF_COLOR = new Color(50, 200, 30);
     private final int FADEOUT_TIME = 10;
     private final int BLOCK = Block.SIZE;
-    private final int MIN_DIST_BETWEEN_TREES = Block.SIZE * 10;
-    private final float TREE_ODD = 0.1f;
-
+    private final int MIN_DIST_BETWEEN_TREES = 10 * Block.SIZE;
+    private final float TREE_ODD = 0.5f;  // being checked every MIN_DIST_BETWEEN_TREES pixels
+    private final int MIN_TREE_HEIGHT = 4;
+    private final int MAX_TREE_HEIGHT = 12;
     private final String ROOT_TAG = "rootBlock";
 
+    // TODO REFACTOR! all remaining magic nums ->> constants (there are plenty magic nums in transitions)
+
+    // FIELDS
     private final GameObjectCollection gameObjects;
     private final Vector2 windowDimensions;
     private final Terrain terrain; //TODO: get callback maybe?
     private final Random rand;
-    private final Random treeLocationRand; // todo can it be the same rand?
     private final int rootLayer;
     private final int leavesLayer;
     private final int seed;
@@ -50,7 +56,6 @@ public class Tree {
         this.windowDimensions = windowDimensions;
         this.terrain = terrain;
         this.rand = new Random(seed);
-        this.treeLocationRand = new Random(seed);
         this.rootLayer = rootLayer;
         this.leavesLayer = leavesLayer;
         this.seed = seed;
@@ -63,16 +68,29 @@ public class Tree {
      * @param maxX The upper bound of the given range
      *             (will be rounded to a multiple of Block.SIZE).
      */
-    public void createInRange(int minX, int maxX) {  // TODO need to do it according minX and maxX!
-        int initialTreeLocation = calcInitialTreeLocation();
-        for (int i = initialTreeLocation; i < windowDimensions.x(); i+=480) {
-            int treeLocation = i;
-            int rootHeight = rand.nextInt(8) + 4;
+//    public void createInRange(int minX, int maxX) {
+//        int initialTreeLocation = calcInitialTreeLocation();
+//        for (int i = initialTreeLocation; i < windowDimensions.x(); i+=480) {
+//            int treeLocation = i;
+//            int rootHeight = rand.nextInt(8) + 4;
+//
+//            this.create(treeLocation, rootHeight);
+//        }
+//    }
 
-            this.create(treeLocation, rootHeight);
+    public void createInRange(int minX, int maxX){
+
+        // IMPORTANT - so that there won't be any 'new' nums (which rand haven't checked yet)
+        minX = minX - (minX % MIN_DIST_BETWEEN_TREES);
+
+        for (int x = minX; x <= maxX; x += MIN_DIST_BETWEEN_TREES){
+            Random r = new Random(Objects.hash(x, seed));
+            if (r.nextFloat() < TREE_ODD) {
+                int height = r.nextInt(MAX_TREE_HEIGHT - MIN_TREE_HEIGHT) + MIN_TREE_HEIGHT;
+                create(x, height);
+            }
         }
     }
-
 
     /**
      * This method receives location for a tree and creates it.
@@ -80,6 +98,7 @@ public class Tree {
      * @param rootHeight num of blocks in the tree root
      */
     private void create(int treeLocation, int rootHeight) {
+
         int groundHeight = calcHeightAt(treeLocation);
 
         // add root
@@ -160,6 +179,8 @@ public class Tree {
             gameObjects.addGameObject(rootBlock, rootLayer);
         }
     }
+
+
 
     /**
      * This method creates two scheduled tasks for random leaf

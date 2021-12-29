@@ -10,12 +10,12 @@ import java.awt.*;
 
 public class Sky {
 
-    private static final Color BASIC_SKY_COLOR = Color.decode("#80C6E5"); // todo should implement GameObject?
+    private static final Color BASIC_SKY_COLOR = Color.decode("#80C6E5");
     private static final String SKY_TAG = "sky";
 
     public static GameObject create(GameObjectCollection gameObjects,
                                     Vector2 windowDimensions,
-                                    int skyLayer) { // todo i added int
+                                    int skyLayer) {
 
         GameObject sky = new GameObject(
                 Vector2.ZERO,
