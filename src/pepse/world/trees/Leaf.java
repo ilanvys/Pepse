@@ -20,14 +20,13 @@ public class Leaf extends GameObject {
         super(topLeftCorner, dimensions, renderable);
         this.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         this.setTag("leafBlock");
-        this.physics().preventIntersectionsFromDirection(Vector2.ZERO);
-
     }
 
-    @Override
-    public void onCollisionEnter(GameObject other, Collision collision) {
-        super.onCollisionEnter(other, collision);
-        System.out.println("yo");
-        this.transform().setVelocity(0,0);
-    }
+//    @Override
+//    public void onCollisionEnter(GameObject other, Collision collision) {
+//        super.onCollisionEnter(other, collision);
+//        if(this.shouldCollideWith(other)) {
+//            this.transform().setVelocity(0,0);
+//        }
+//    }
 }

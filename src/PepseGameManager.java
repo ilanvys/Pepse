@@ -32,6 +32,9 @@ public class PepseGameManager extends GameManager {
     private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
     private static final int AVATAR_LAYER = Layer.DEFAULT;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
+    public int LEAVES_LAYER = Layer.DEFAULT;
+    public int ROOT_LAYER = Layer.DEFAULT - 5;
+
 
 
 //    private static final int  = Layer.BACKGROUND + 10;
@@ -83,7 +86,7 @@ public class PepseGameManager extends GameManager {
         // const
 
         // create trees
-        this.tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed);
+        this.tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed, ROOT_LAYER, LEAVES_LAYER);
 
         // create avatar
         Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
@@ -100,7 +103,7 @@ public class PepseGameManager extends GameManager {
 
 
         // TODO REFACTOR THIS
-//        gameObjects().layers().shouldLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10, true);
+        gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
 //        System.out.println(gameObjects().layers().doLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10));
 
 

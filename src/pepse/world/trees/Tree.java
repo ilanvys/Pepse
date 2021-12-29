@@ -2,7 +2,6 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.components.CoordinateSpace;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
@@ -24,6 +23,8 @@ public class Tree {
     private final Vector2 windowDimensions;
     private final Terrain terrain; //TODO: get callback maybe?
     private final Random rand;
+    private final int rootLayer;
+    private final int leavesLayer;
 
     /**
      * This function initiates the class with all the params necessary
@@ -36,11 +37,15 @@ public class Tree {
     public Tree(GameObjectCollection gameObjects,
                 Vector2 windowDimensions,
                 Terrain terrain,
-                int seed) {
+                int seed,
+                int rootLayer,
+                int leavesLayer) {
         this.gameObjects = gameObjects;
         this.windowDimensions = windowDimensions;
         this.terrain = terrain;
         this.rand = new Random(seed);
+        this.rootLayer = rootLayer;
+        this.leavesLayer = leavesLayer;
     }
 
     /**
@@ -84,7 +89,7 @@ public class Tree {
                 createLeafAnimation(leafBlock);
                 createLeafFallTask(leafBlock, originalLeafLocation);
 
-                gameObjects.addGameObject(leafBlock, Layer.DEFAULT+1);
+                gameObjects.addGameObject(leafBlock, leavesLayer);
             }
         }
     }
@@ -143,8 +148,7 @@ public class Tree {
 
             rootBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
             rootBlock.setTag("rootBlock");
-
-            gameObjects.addGameObject(rootBlock, Layer.DEFAULT);
+            gameObjects.addGameObject(rootBlock, rootLayer);
         }
     }
 
