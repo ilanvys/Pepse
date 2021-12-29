@@ -16,6 +16,9 @@ public class Terrain {
     private static final Color BASE_GROUND_COLOR = new Color(212, 123,74);
     private static final String GROUND_TAG = "ground";
     private static final int TERRAIN_DEPTH = 20;
+    private static final int NON_COLLISABLE_LAYER_DIFF = -10; // will add this diff to received layer in
+    // constructor in order to differentiate blocks of top level (2 upper rows, can be collided with) and
+    // other blocks (collision won't do a thing. Avatar won't collide with the as they are deep ( >2 ).
 
     private final GameObjectCollection gameObjects;
     private final int groundLayer;
@@ -48,7 +51,6 @@ public class Terrain {
 
     public void createInRange(int minX, int maxX){
 
-
         minX = getClosestSmallerNumDividesByBlockSize(minX);
         maxX = getClosestSmallerNumDividesByBlockSize(maxX);
 
@@ -57,20 +59,29 @@ public class Terrain {
             int roundedHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
 
             for (int i = 0; i < TERRAIN_DEPTH; i++) {
+                Block block = createBlock(x, roundedHeight);
+                if (i < 2){
+                    gameObjects.addGameObject(block, Layer.DEFAULT);
+                    block.renderer().setRenderable(new RectangleRenderable(Color.BLUE));
+                } else {
+                    gameObjects.addGameObject(block, Layer.DEFAULT + NON_COLLISABLE_LAYER_DIFF);
+                }
 
-                createBlock(x, roundedHeight);
                 roundedHeight += Block.SIZE;
 
             }
         }
     }
 
-    private void createBlock(int x, int y) {
+    private static Block createBlock(int x, int y) {
         Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
-        GameObject block = new Block(new Vector2(x, y), renderable);
+        Block block = new Block(new Vector2(x, y), renderable);
         block.setTag(GROUND_TAG);
-        gameObjects.addGameObject(block, Layer.DEFAULT);
+
+        return block;
+
     }
+
 
     /**
      * Calculates the closest smaller num that divides by Block.SIZE
