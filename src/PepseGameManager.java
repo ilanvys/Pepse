@@ -21,6 +21,21 @@ public class PepseGameManager extends GameManager {
 
     // CONSTANTS
     private static final int OPTIONAL_SEEDS = 100;
+    private static final float DAY_CYCLE_LENGTH = 30f;
+    private static final Color SUN_COLOR = new Color(255, 255, 0, 20);
+
+    // LAYERS
+    private static final int SKY_LAYER = Layer.BACKGROUND;
+    private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 5;
+    private static final int SUN_LAYER = Layer.BACKGROUND + 10;
+    private static final int UPPER_TERRAIN_LAYER = Layer.DEFAULT;
+    private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
+    private static final int AVATAR_LAYER = Layer.DEFAULT;
+    private static final int NIGHT_LAYER = Layer.FOREGROUND;
+
+
+//    private static final int  = Layer.BACKGROUND + 10;
+
 
     // FIELDS
     private Vector2 windowDimensions;
@@ -30,6 +45,7 @@ public class PepseGameManager extends GameManager {
     private SoundReader soundReader;
     private Avatar avatar;
     private Terrain terrain;
+    private Tree tree;
     private int worldBuiltPointer = 0;  // relative to avatar's pos!!!
 
     @Override
@@ -42,48 +58,52 @@ public class PepseGameManager extends GameManager {
         this.soundReader = soundReader;
 
         // todo erase
-        windowController.setTargetFramerate(30);
-
+//        windowController.setTargetFramerate(30);
 
         // seed
         Random random = new Random();
         int seed = random.nextInt(OPTIONAL_SEEDS);
 
         // create sky
-        pepse.world.Sky.create(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
+        pepse.world.Sky.create(gameObjects(), windowController.getWindowDimensions(), SKY_LAYER);
 
         // create terrain
-        this.terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS,
+        this.terrain = new Terrain(gameObjects(), UPPER_TERRAIN_LAYER,
                 windowController.getWindowDimensions(), 20); // todo use real seed
 
 
         // create night/day
-        Night.create(this.gameObjects(), Layer.FOREGROUND, this.windowDimensions, 30.0F);
+        Night.create(this.gameObjects(), NIGHT_LAYER, this.windowDimensions, DAY_CYCLE_LENGTH);
 
         // crate sun
-        GameObject sun = Sun.create(this.gameObjects(), Layer.BACKGROUND+2, this.windowDimensions, 30.0F);
+        GameObject sun = Sun.create(this.gameObjects(), SUN_LAYER, this.windowDimensions, DAY_CYCLE_LENGTH);
 
         // create sun halo
-        GameObject sunHalo = SunHalo.create(this.gameObjects(), Layer.BACKGROUND+1, sun, new Color(255, 255, 0, 20));
+        GameObject sunHalo = SunHalo.create(this.gameObjects(), SUN_HALO_LAYER, sun, SUN_COLOR); // todo
+        // const
 
         // create trees
-        Tree tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed);
-        tree.createInRange(0,1920);
+        this.tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed);
 
         // create avatar
         Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
-        this.avatar = Avatar.create(gameObjects(), Layer.DEFAULT, initPos, inputListener, imageReader);
+        this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, initPos, inputListener, imageReader);
 
         // set camera
         setCamera(new Camera(avatar, Vector2.ZERO, windowDimensions, windowDimensions));
 
+        // build world
         int windowDimX = (int) windowDimensions.x();
-        terrain.createInRange(-windowDimX, 2*windowDimX); // todo infinite
-        // world
+        terrain.createInRange(-windowDimX, 2*windowDimX);
+        tree.createInRange(-windowDimX, 2*windowDimX);
         worldBuiltPointer = (int) avatar.getCenter().x();
 
-        gameObjects().layers().shouldLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10, true);
-        System.out.println(gameObjects().layers().doLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10));
+
+        // TODO REFACTOR THIS
+//        gameObjects().layers().shouldLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10, true);
+//        System.out.println(gameObjects().layers().doLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10));
+
+
     }
 
     @Override
@@ -103,6 +123,10 @@ public class PepseGameManager extends GameManager {
 
     }
 
+    private void removeObjectFromItsLayer(GameObject obj){
+
+    }
+
     private void extendWorldToRight(int avatarXPos, int windowXDim) {
 
         // adding world to right
@@ -111,8 +135,8 @@ public class PepseGameManager extends GameManager {
         // removing world from left
         for (GameObject obj : gameObjects()) {
             if  (obj.getCenter().x() < worldBuiltPointer - windowXDim / 2) {
-                gameObjects().removeGameObject(obj, Layer.DEFAULT);
-                gameObjects().removeGameObject(obj, Layer.DEFAULT - 10); // TODO CONST LAYER!!!
+                gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
+                gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER); // TODO duplicate code, fix it
             }
         }
         worldBuiltPointer = avatarXPos;
@@ -126,8 +150,8 @@ public class PepseGameManager extends GameManager {
         // removing world from right
         for (GameObject obj : gameObjects()) {
             if (obj.getCenter().x() > worldBuiltPointer + windowXDim / 2) {
-                gameObjects().removeGameObject(obj, Layer.DEFAULT);
-                gameObjects().removeGameObject(obj, Layer.DEFAULT - 10); // TODO CONST LAYER!!!
+                gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
+                gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
             }
         }
         worldBuiltPointer = avatarXPos;  // updating world pointer
