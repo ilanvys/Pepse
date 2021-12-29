@@ -2,7 +2,6 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
-import danogl.components.CoordinateSpace;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
@@ -85,7 +84,7 @@ public class Tree {
         for (int i = leavesCol; i <= (leavesCol + treeTopSize); i+=BLOCK) {
             for (int j = leavesRow; j <= leavesRow + treeTopSize; j+=BLOCK) {
                 Vector2 originalLeafLocation = new Vector2(i, groundHeight - j);
-                GameObject leafBlock = createLeaf(originalLeafLocation);
+                Leaf leafBlock = createLeaf(originalLeafLocation);
 
                 createLeafAnimation(leafBlock);
                 createLeafFallTask(leafBlock, originalLeafLocation);
@@ -120,7 +119,7 @@ public class Tree {
      *                             created at.
      * @return GameObject of a leaf
      */
-    private GameObject createLeaf(Vector2 originalLeafLocation){
+    private Leaf createLeaf(Vector2 originalLeafLocation){
         return new Leaf(
                 originalLeafLocation,
                 new Vector2(BLOCK, BLOCK),
@@ -215,7 +214,7 @@ public class Tree {
      * @param originalLeafLocation The location the leaf as originally
      *                             created at.
      */
-    private void createLeafFallTask(GameObject leafBlock, Vector2 originalLeafLocation) {
+    private void createLeafFallTask(Leaf leafBlock, Vector2 originalLeafLocation) {
         leafBlock.renderer().setOpaqueness(1);
         leafBlock.setTopLeftCorner(originalLeafLocation);
 
@@ -225,13 +224,12 @@ public class Tree {
             false,
             () -> {
                 // create transition for vertical movement
-                Transition<Float> verticalTransition =
-                        initLeafVerticalFallTransition(leafBlock);
+                leafBlock.initLeafVerticalFallTransition(leafBlock, rand.nextInt(5) + 2);
 
                 leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> {
                     // stop leaf horizontal and vertical movement when fadeOut ends
-                    leafBlock.transform().setVelocity(0, 0);
-                    leafBlock.removeComponent(verticalTransition);
+//                    leafBlock.transform().setVelocity(0, 0);
+//                    leafBlock.removeComponent(verticalTransition);
 
                     initLeafAfterlifeWaitTask(
                             leafBlock,
@@ -249,7 +247,7 @@ public class Tree {
      *                             created at.
      * @param afterlifeTime The time needed to wait before the leaf reappears.
      */
-    private void initLeafAfterlifeWaitTask(GameObject leafBlock,
+    private void initLeafAfterlifeWaitTask(Leaf leafBlock,
                                            Vector2 originalLeafLocation,
                                            int afterlifeTime) {
         new ScheduledTask(
