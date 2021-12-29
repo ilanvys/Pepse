@@ -64,7 +64,7 @@ public class PepseGameManager extends GameManager {
         GameObject sun = Sun.create(this.gameObjects(), Layer.BACKGROUND+2, this.windowDimensions, 30.0F);
 
         // create sun halo
-        GameObject sunHalo = SunHalo.create(this.gameObjects(), Layer.BACKGROUND+1, sun, new Color(255, 255, 0, 40));
+        GameObject sunHalo = SunHalo.create(this.gameObjects(), Layer.BACKGROUND+1, sun, new Color(255, 255, 0, 20));
 
         // create trees
         Tree tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed);

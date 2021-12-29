@@ -39,11 +39,4 @@ public class SunHalo {
 
         return sunHalo;
     }
-
-    @FunctionalInterface
-    private interface Component {
-        void update(float deltaTime);
-    }
-
-    private void addComponent(Component component) {}
 }
