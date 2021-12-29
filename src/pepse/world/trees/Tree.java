@@ -18,14 +18,19 @@ public class Tree {
     private final Color LEAF_COLOR = new Color(50, 200, 30);
     private final int FADEOUT_TIME = 10;
     private final int BLOCK = Block.SIZE;
+    private final int MIN_DIST_BETWEEN_TREES = Block.SIZE * 10;
+    private final float TREE_ODD = 0.1f;
+
     private final String ROOT_TAG = "rootBlock";
 
     private final GameObjectCollection gameObjects;
     private final Vector2 windowDimensions;
     private final Terrain terrain; //TODO: get callback maybe?
     private final Random rand;
+    private final Random treeLocationRand; // todo can it be the same rand?
     private final int rootLayer;
     private final int leavesLayer;
+    private final int seed;
 
     /**
      * This function initiates the class with all the params necessary
@@ -45,8 +50,10 @@ public class Tree {
         this.windowDimensions = windowDimensions;
         this.terrain = terrain;
         this.rand = new Random(seed);
+        this.treeLocationRand = new Random(seed);
         this.rootLayer = rootLayer;
         this.leavesLayer = leavesLayer;
+        this.seed = seed;
     }
 
     /**
@@ -56,7 +63,7 @@ public class Tree {
      * @param maxX The upper bound of the given range
      *             (will be rounded to a multiple of Block.SIZE).
      */
-    public void createInRange(int minX, int maxX) {
+    public void createInRange(int minX, int maxX) {  // TODO need to do it according minX and maxX!
         int initialTreeLocation = calcInitialTreeLocation();
         for (int i = initialTreeLocation; i < windowDimensions.x(); i+=480) {
             int treeLocation = i;
@@ -65,6 +72,7 @@ public class Tree {
             this.create(treeLocation, rootHeight);
         }
     }
+
 
     /**
      * This method receives location for a tree and creates it.
@@ -101,9 +109,9 @@ public class Tree {
      *         rounded to a multiple of Block.SIZE
      */
     private int calcHeightAt(int location) {
-        //TODO: change back
-//        return (int) (terrain.groundHeightAt(location)/BLOCK)*BLOCK-BLOCK - 60;
-        return (int) (terrain.groundHeightAt(location)/BLOCK)*BLOCK-BLOCK + 100;
+        int height = (int) terrain.groundHeightAt(location);
+        int roundedHeight = height - (height % Block.SIZE);
+        return roundedHeight;
     }
 
     /**
