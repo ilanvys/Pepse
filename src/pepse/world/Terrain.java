@@ -14,8 +14,8 @@ import java.awt.*;
 public class Terrain {
 
     private static final Color BASE_GROUND_COLOR = new Color(212, 123,74);
-    private static final String GROUND_TAG = "lower_ground";
-//    private static final String GROUND_TAG = "upper_ground";
+    private static final String UPPER_TERRAIN_TAG = "upper terrain";
+    private static final String LOWER_TERRAIN_TAG = "lower terrain";
     private static final int TERRAIN_DEPTH = 20;
     private static final int NON_COLLISABLE_LAYER_DIFF = -10; // will add this diff to received layer in
     // constructor in order to differentiate blocks of top level (2 upper rows, can be collided with) and
@@ -64,8 +64,10 @@ public class Terrain {
                 if (i < 2){
                     gameObjects.addGameObject(block, groundLayer);
                     block.renderer().setRenderable(new RectangleRenderable(Color.BLUE));
+                    block.setTag(UPPER_TERRAIN_TAG);
                 } else {
                     gameObjects.addGameObject(block, groundLayer + NON_COLLISABLE_LAYER_DIFF);
+                    block.setTag(LOWER_TERRAIN_TAG);
                 }
 
                 roundedHeight += Block.SIZE;
@@ -77,7 +79,6 @@ public class Terrain {
     private static Block createBlock(int x, int y) {
         Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
         Block block = new Block(new Vector2(x, y), renderable);
-        block.setTag(GROUND_TAG);
 
         return block;
 

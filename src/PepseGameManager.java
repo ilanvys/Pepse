@@ -35,9 +35,16 @@ public class PepseGameManager extends GameManager {
     public int LEAVES_LAYER = Layer.DEFAULT;
     public int ROOT_LAYER = Layer.DEFAULT - 5;
 
-
-
-//    private static final int  = Layer.BACKGROUND + 10;
+    // TAGS  todo erase what were not using. notice its only a name consists with tag name given in class
+    private static final String SKY_TAG = "sky";
+    private static final String SUN_HALO_TAG = "sun halo";
+    private static final String SUN_TAG = "sun";
+    private static final String UPPER_TERRAIN_TAG = "upper terrain";
+    private static final String LOWER_TERRAIN_TAG = "lower terrain"; // todo how can we pass it to Terrain?
+    private static final String AVATAR_TAG = "avatar";
+    private static final String NIGHT_TAG = "night";
+    private static final String LEAF_BLOCK_TAG = "leafBlock";
+    private static final String ROOT_TAG = "rootBlock"; // tree root
 
 
     // FIELDS
@@ -114,7 +121,7 @@ public class PepseGameManager extends GameManager {
         super.update(deltaTime);
 
         int avatarXPos = (int) avatar.getCenter().x();
-        int windowXDim = (int) windowDimensions.x();
+        int windowXDim = (int) windowDimensions.x()/2; // todo erase /2
 
         if (worldBuiltPointer + windowXDim / 2 < avatarXPos) {
             extendWorldToRight(avatarXPos, windowXDim);
@@ -127,19 +134,36 @@ public class PepseGameManager extends GameManager {
     }
 
     private void removeObjectFromItsLayer(GameObject obj){
-
-    }
+        switch (obj.getTag()) {
+            case UPPER_TERRAIN_TAG:
+                gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
+                break;
+            case LOWER_TERRAIN_TAG:
+                gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
+                break;
+            case ROOT_TAG:
+                gameObjects().removeGameObject(obj, ROOT_LAYER);
+                break;
+            case LEAF_BLOCK_TAG:
+                gameObjects().removeGameObject(obj, LEAVES_LAYER);
+                break;
+            // TODO general obj?
+        }
+        }
 
     private void extendWorldToRight(int avatarXPos, int windowXDim) {
 
         // adding world to right
-        terrain.createInRange(worldBuiltPointer + windowXDim, worldBuiltPointer + (int) (1.5 * windowXDim));
+        int minX = worldBuiltPointer + windowXDim;
+        int maxX = worldBuiltPointer + (int) (1.5 * windowXDim);
+        terrain.createInRange(minX, maxX);
+        tree.createInRange(minX, maxX);
+
 
         // removing world from left
         for (GameObject obj : gameObjects()) {
             if  (obj.getCenter().x() < worldBuiltPointer - windowXDim / 2) {
-                gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
-                gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER); // TODO duplicate code, fix it
+                removeObjectFromItsLayer(obj);
             }
         }
         worldBuiltPointer = avatarXPos;
@@ -147,14 +171,18 @@ public class PepseGameManager extends GameManager {
 
     private void extendWorldToLeft(int avatarXPos, int windowXDim) {
 
+
         // adding world to left
-        terrain.createInRange(worldBuiltPointer - (int) (1.5 * windowXDim), worldBuiltPointer - windowXDim);
+        int minX = worldBuiltPointer - (int) (1.5 * windowXDim);
+        int maxX = worldBuiltPointer - windowXDim;
+        terrain.createInRange(minX, maxX);
+        tree.createInRange(minX, maxX);
+
 
         // removing world from right
         for (GameObject obj : gameObjects()) {
             if (obj.getCenter().x() > worldBuiltPointer + windowXDim / 2) {
-                gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
-                gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
+                removeObjectFromItsLayer(obj);
             }
         }
         worldBuiltPointer = avatarXPos;  // updating world pointer

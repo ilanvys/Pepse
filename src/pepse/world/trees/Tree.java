@@ -18,6 +18,7 @@ public class Tree {
     private final Color LEAF_COLOR = new Color(50, 200, 30);
     private final int FADEOUT_TIME = 10;
     private final int BLOCK = Block.SIZE;
+    private final String ROOT_TAG = "rootBlock";
 
     private final GameObjectCollection gameObjects;
     private final Vector2 windowDimensions;
@@ -146,8 +147,7 @@ public class Tree {
                                     ROOT_COLOR, 10)
                     ));
 
-            rootBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-            rootBlock.setTag("rootBlock");
+            rootBlock.setTag(ROOT_TAG);
             gameObjects.addGameObject(rootBlock, rootLayer);
         }
     }
