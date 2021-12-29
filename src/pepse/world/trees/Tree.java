@@ -102,7 +102,8 @@ public class Tree {
      */
     private int calcHeightAt(int location) {
         //TODO: change back
-        return (int) (terrain.groundHeightAt(location)/BLOCK)*BLOCK-BLOCK - 60;
+//        return (int) (terrain.groundHeightAt(location)/BLOCK)*BLOCK-BLOCK - 60;
+        return (int) (terrain.groundHeightAt(location)/BLOCK)*BLOCK-BLOCK + 100;
     }
 
     /**
@@ -190,7 +191,7 @@ public class Tree {
     }
 
     /**
-     * This method creates a Transition that plays with the leaf's
+     * This method creates a TransitionTransition that plays with the leaf's
      * angle, for a realistic feel.
      * @param leafBlock the leaf to append the Transition to.
      */

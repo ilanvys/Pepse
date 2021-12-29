@@ -5,6 +5,7 @@ import danogl.collisions.Collision;
 import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.world.Block;
 
 public class Leaf extends GameObject {
 
@@ -24,11 +25,11 @@ public class Leaf extends GameObject {
         this.setTag(LEAF_BLOCK_TAG);
     }
 
-//    @Override
-//    public void onCollisionEnter(GameObject other, Collision collision) {
-//        super.onCollisionEnter(other, collision);
-//        if(this.shouldCollideWith(other)) {
-//            this.transform().setVelocity(0,0);
-//        }
-//    }
+    @Override
+    public void onCollisionEnter(GameObject other, Collision collision) {
+        super.onCollisionEnter(other, collision);
+        if (other instanceof Block){
+            System.out.println("LEAF COLLIDED WITH " + other.getTag());
+        }
+    }
 }
