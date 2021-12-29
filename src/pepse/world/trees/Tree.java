@@ -95,7 +95,8 @@ public class Tree {
      *         rounded to a multiple of Block.SIZE
      */
     private int calcHeightAt(int location) {
-        return (int) (terrain.groundHeightAt(location)/BLOCK)*BLOCK-BLOCK;
+        //TODO: change back
+        return (int) (terrain.groundHeightAt(location)/BLOCK)*BLOCK-BLOCK - 60;
     }
 
     /**
@@ -113,18 +114,13 @@ public class Tree {
      * @return GameObject of a leaf
      */
     private GameObject createLeaf(Vector2 originalLeafLocation){
-        GameObject leafBlock = new GameObject(
+        return new Leaf(
                 originalLeafLocation,
                 new Vector2(BLOCK, BLOCK),
                 new RectangleRenderable(
                         pepse.util.ColorSupplier.approximateColor(
                                 LEAF_COLOR, 20)
                 ));
-
-        leafBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        leafBlock.setTag("leafBlock");
-
-        return leafBlock;
     }
 
     /**

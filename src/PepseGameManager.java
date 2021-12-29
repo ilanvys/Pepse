@@ -82,7 +82,8 @@ public class PepseGameManager extends GameManager {
         // world
         worldBuiltPointer = (int) avatar.getCenter().x();
 
-
+        gameObjects().layers().shouldLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10, true);
+        System.out.println(gameObjects().layers().doLayersCollide(Layer.DEFAULT+1, Layer.DEFAULT-10));
     }
 
     @Override
