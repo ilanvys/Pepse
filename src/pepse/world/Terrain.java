@@ -1,5 +1,6 @@
 package pepse.world;
 
+import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
@@ -52,24 +53,35 @@ public class Terrain {
         minX = getClosestSmallerNumDividesByBlockSize(minX);
         maxX = getClosestSmallerNumDividesByBlockSize(maxX);
 
-        for (int x = minX; x <= maxX; x += Block.SIZE) {
+        // building according to avatar direction
 
-            int roundedHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
-            for (int i = 0; i < TERRAIN_DEPTH; i++) {
-                Block block = createBlock(x, roundedHeight);
-                if (i < 2){
-                    gameObjects.addGameObject(block, groundLayer);
-                    block.renderer().setRenderable(new RectangleRenderable(
-                            ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
-                    block.setTag(UPPER_TERRAIN_TAG);
-                } else {
-                    gameObjects.addGameObject(block, groundLayer + NON_COLLISABLE_LAYER_DIFF);
-                    block.setTag(LOWER_TERRAIN_TAG);
-                }
-
-                roundedHeight += Block.SIZE;
-
+        if (minX < maxX){
+            for (int x = minX; x < maxX; x += Block.SIZE) {
+                createAtX(x);
             }
+        }
+        if (minX > maxX){
+            for (int x = minX; x >= maxX; x -= Block.SIZE){
+                createAtX(x);
+            }
+        }
+    }
+
+    private void createAtX(int x) {
+        int roundedHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
+        for (int i = 0; i < TERRAIN_DEPTH; i++) {
+            Block block = createBlock(x, roundedHeight);
+            if (i < 2){
+                gameObjects.addGameObject(block, groundLayer);
+                block.renderer().setRenderable(new RectangleRenderable(Color.BLUE));
+                block.setTag(UPPER_TERRAIN_TAG);
+            } else {
+                gameObjects.addGameObject(block, groundLayer + NON_COLLISABLE_LAYER_DIFF);
+                block.setTag(LOWER_TERRAIN_TAG);
+            }
+
+            roundedHeight += Block.SIZE;
+
         }
     }
 

@@ -16,7 +16,6 @@ import pepse.world.daynight.SunHalo;
 import pepse.world.trees.Tree;
 
 import java.awt.*;
-import java.util.Objects;
 import java.util.Random;
 
 public class PepseGameManager extends GameManager {
@@ -25,17 +24,18 @@ public class PepseGameManager extends GameManager {
     private static final int OPTIONAL_SEEDS = 100;
     private static final float DAY_CYCLE_LENGTH = 30f;
     private static final Color SUN_COLOR = new Color(255, 255, 0, 20);
+    private static final int WORLD_BUFFER = 3*Block.SIZE;
 
     // LAYERS
     private static final int SKY_LAYER = Layer.BACKGROUND;
     private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 5;
     private static final int SUN_LAYER = Layer.BACKGROUND + 10;
-    private static final int UPPER_TERRAIN_LAYER = Layer.DEFAULT - 5;
-    private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT; // todo how can we pass it to Terrain?
+    private static final int UPPER_TERRAIN_LAYER = Layer.DEFAULT;
+    private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
     private static final int AVATAR_LAYER = Layer.DEFAULT;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
-    public int LEAVES_LAYER = Layer.DEFAULT + 5;
-    public int ROOT_LAYER = Layer.DEFAULT - 10;
+    public int LEAVES_LAYER = Layer.DEFAULT - 4;
+    public int ROOT_LAYER = Layer.DEFAULT - 5;
 
     // TAGS  todo erase what were not using. notice its only a name consists with tag name given in class
     private static final String SKY_TAG = "sky";
@@ -58,7 +58,10 @@ public class PepseGameManager extends GameManager {
     private Avatar avatar;
     private Terrain terrain;
     private Tree tree;
+    private Camera camera;
     private int worldBuiltPointer = 0;  // points which part (x axis) of the wold is currently built
+    private int rightWorldPointer;
+    private int leftWorldPointer;
 
     @Override
     public void initializeGame(ImageReader imageReader,
@@ -98,36 +101,120 @@ public class PepseGameManager extends GameManager {
         // create avatar & set camera
         Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
         this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, initPos, inputListener, imageReader);
-        setCamera(new Camera(avatar, Vector2.ZERO, windowDimensions, windowDimensions));
+        this.camera = new Camera(avatar, Vector2.ZERO, windowDimensions, windowDimensions);
+        setCamera(camera);
+
+//        // build world
+//        int windowDimX = (int) windowDimensions.x();
+//        terrain.createInRange(-windowDimX, 2*windowDimX);
+//        tree.createInRange(0, windowDimX);
+//        worldBuiltPointer = (int) avatar.getCenter().x();
 
         // build world
-        int windowDimX = (int) windowDimensions.x();
-        terrain.createInRange(-windowDimX, 2*windowDimX);
-        tree.createInRange(0, windowDimX);
-        worldBuiltPointer = (int) avatar.getCenter().x();
+        float rightScreenX = camera.screenToWorldCoords(windowDimensions).x();
+        float leftScreenX = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
+
+        leftWorldPointer = normalizeToBlockSize(leftScreenX) - WORLD_BUFFER;
+        rightWorldPointer = normalizeToBlockSize(rightScreenX) + WORLD_BUFFER;
+
+        buildWorld(leftWorldPointer, rightWorldPointer);
+
 
 
         // Differentiating layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
-        gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, UPPER_TERRAIN_LAYER, true);
+//        gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, UPPER_TERRAIN_LAYER, true);
+
     }
 
+
+//    @Override
+//    public void update(float deltaTime) {
+//        super.update(deltaTime);
+//
+//        int avatarXPos = normalizeToBlockSize(avatar.getCenter().x());
+//        int windowXDim = normalizeToBlockSize(windowDimensions.x());
+//
+//        if (worldBuiltPointer + windowXDim / 2 < avatarXPos) {  // avatar had walked right enough
+//            extendWorldToRight(avatarXPos, windowXDim);
+//        }
+//        if (avatarXPos < worldBuiltPointer - windowXDim / 2) {  // avatar had walked left enough
+//            extendWorldToLeft(avatarXPos, windowXDim);
+//        }
+//
+//    }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
 
-        int avatarXPos = normalizeToBlockSize(avatar.getCenter().x());
-        int windowXDim = normalizeToBlockSize(windowDimensions.x());
+        float rightScreenX = camera.screenToWorldCoords(windowDimensions).x();
+        float leftScreenX = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
 
-
-
-        if (worldBuiltPointer + windowXDim / 2 < avatarXPos) {  // avatar had walked right enough
-            extendWorldToRight(avatarXPos, windowXDim);
+        if (rightScreenX >= rightWorldPointer){
+            extendWorldToRight(rightWorldPointer, rightScreenX + WORLD_BUFFER);
         }
-        if (avatarXPos < worldBuiltPointer - windowXDim / 2) {  // avatar had walked left enough
-            extendWorldToLeft(avatarXPos, windowXDim);
+
+        if (leftScreenX <= leftWorldPointer){
+//            extendWorldToLeft(leftScreenX, leftWorldPointer - WORLD_BUFFER);
+            extendWorldToLeft(leftScreenX, leftWorldPointer - WORLD_BUFFER);
         }
+
+
+
+    }
+
+    private void extendWorldToRight(float minX, float maxX){
+
+        int normalizedMinX = normalizeToBlockSize(minX);
+        int normalizedMaxX = normalizeToBlockSize(maxX);
+
+        // build world to right
+        buildWorld(normalizedMinX, normalizedMaxX);  // todo can be replaced with 2 funcs
+
+        // remove world from left
+        for (GameObject obj : gameObjects()){
+            if (obj.getCenter().x() < leftWorldPointer){
+                removeObjectFromItsLayer(obj);
+            }
+        }
+
+        System.out.println("removing till " + leftWorldPointer);
+
+        // update both pointers
+        rightWorldPointer = normalizedMaxX;
+        leftWorldPointer += (normalizedMaxX - normalizedMinX);
+
+    }
+
+
+    private void extendWorldToLeft(float start, float end){
+
+        int normalizedStart = normalizeToBlockSize(start);
+        int normalizedEnd = normalizeToBlockSize(end);
+
+        // build world to left (according to avatar walking direction)
+        buildWorld(normalizedStart, normalizedEnd);
+
+        // remove world from right
+        for (GameObject obj : gameObjects()){
+            if (obj.getCenter().x() > rightWorldPointer){
+                removeObjectFromItsLayer(obj);
+            }
+        }
+
+        // update pointers
+        leftWorldPointer = normalizedEnd;
+        rightWorldPointer -= (normalizedStart - normalizedEnd);
+
+    }
+
+
+    private void buildWorld(int minX, int maxX){
+
+
+        terrain.createInRange(minX, maxX);
+        tree.createInRange(minX, maxX);
 
     }
 
@@ -178,7 +265,6 @@ public class PepseGameManager extends GameManager {
     private int normalizeToBlockSize(float x){
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }
-
 
 
     public static void main(String[] args) {
