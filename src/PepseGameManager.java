@@ -60,7 +60,10 @@ public class PepseGameManager extends GameManager {
     private int worldBuiltPointer = 0;  // points which part (x axis) of the wold is currently built
 
     @Override
-    public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
+    public void initializeGame(ImageReader imageReader,
+                               SoundReader soundReader,
+                               UserInputListener inputListener,
+                               WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.windowDimensions = windowController.getWindowDimensions();
         this.imageReader = imageReader;

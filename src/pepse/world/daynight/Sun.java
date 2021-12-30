@@ -50,7 +50,7 @@ public class Sun {
     private static void createSunTransition(Vector2 windowDimensions, float cycleLength) {
         float startPositionX = windowDimensions.x()/4;
         float intervalX = (3*windowDimensions.x()/4 - windowDimensions.x()/4) / 360;
-        float intervalY = (windowDimensions.y()/3) / 360;
+        float intervalY = (windowDimensions.y()/9) / 360;
 
         // create sun movement transition
         new Transition<Float>(
