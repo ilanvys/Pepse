@@ -6,6 +6,7 @@ import danogl.collisions.Layer;
 import danogl.components.CoordinateSpace;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
+import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
@@ -13,18 +14,24 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.security.Key;
 
 public class Avatar extends GameObject {
 
+    private static final String STAND_IMAGE_PATH = "assets/avatarStand.png";
+    private static final String WALK_RIGHT_IMAGE_PATH = "assets/avatarWalkRight.png";
+    private static final String WALK_LEFT_IMAGE_PATH = "assets/avatarWalkLeft.png";
+    private static final float AVATAR_ANIMATION_DELTA_TIME = 0.2f;
     private static final int VELOCITY_X = 300;
     private static final int VELOCITY_JUMP = 300;
     private static final int GRAVITY = 300;
     private static final Vector2 DIMENSIONS = new Vector2(50,50);
-    private static final int MAX_ENERGY = 100;  // todo change to 100
+    private static final int MAX_ENERGY = 100;
     private static final String ENERGY_STRING = "Energy: %d";
     private static final Vector2 ENERGY_COUNTER_POS = new Vector2(30,30);
     private static final Vector2 ENERGY_COUNTER_DIMENSIONS = new Vector2(100,30);
+
+    private static Renderable standingRenderable;
+    private static Renderable walkingRenderable;
 
     private final UserInputListener inputListener;
     private final GameObjectCollection gameObjects;
@@ -50,20 +57,29 @@ public class Avatar extends GameObject {
                                 ImageReader imageReader){
 
 
-
-//        Renderable avatarImage = imageReader.readImage() // todo
-
-        Renderable avatarImage = new RectangleRenderable(Color.BLACK);  // todo erase when i put img
+        createRenderables(imageReader);
 
         Avatar avatar = new Avatar(inputListener, gameObjects);
         avatar.setTopLeftCorner(topLeftCorner);
         avatar.transform().setAccelerationY(GRAVITY);
-        avatar.renderer().setRenderable(avatarImage);
+        avatar.renderer().setRenderable(standingRenderable);
         avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
         avatar.createEnergyCounter();
         gameObjects.addGameObject(avatar, layer);
 
         return avatar;
+
+    }
+
+    private static void createRenderables(ImageReader imageReader) {
+
+        // standing
+        standingRenderable = imageReader.readImage(STAND_IMAGE_PATH, true);
+
+        // walking
+        Renderable walkLeft = imageReader.readImage(WALK_LEFT_IMAGE_PATH, true);
+        Renderable walkRight = imageReader.readImage(WALK_RIGHT_IMAGE_PATH, true);
+        walkingRenderable = new AnimationRenderable(new Renderable[] {walkLeft, walkRight}, AVATAR_ANIMATION_DELTA_TIME);
 
     }
 
@@ -74,36 +90,63 @@ public class Avatar extends GameObject {
         // Update energy renderer
         energyRenderable.setString(String.format(ENERGY_STRING, (int) energy));
 
-        // Walking commands
-        float xVel = 0;
-        if (inputListener.isKeyPressed(KeyEvent.VK_LEFT)){
-            xVel -= VELOCITY_X;
-        }
-        if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT)){
-            xVel += VELOCITY_X;
-        }
-        transform().setVelocityX(xVel);
+        // Walking
+        walk();
 
-        // Jumping & flying commands
-        if (inputListener.isKeyPressed(KeyEvent.VK_SPACE)){
+        // Flying
+        fly();
 
-            if (energy > 0 && inputListener.isKeyPressed(KeyEvent.VK_SHIFT)){
-                transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
-                energy -= 0.5;  // reduce energy while flying
-            }
+        // Jumping
+        jump();
 
-            if (transform().getVelocity().y() == 0){
-                transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
-            }
+    }
+
+    private void jump() {
+
+        if (    inputListener.isKeyPressed(KeyEvent.VK_SPACE)
+                && transform().getVelocity().y() == 0){
+
+            transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
 
         }
+    }
 
-        // Charge energy while not jumping / flying
+    private void fly() {
+        if (    inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
+                inputListener.isKeyPressed(KeyEvent.VK_SHIFT) &&
+                energy > 0){
+
+            transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
+            renderer().setRenderableAngle(-80);
+            energy -= 0.5;  // reduce energy while flying
+        }
+        else { renderer().setRenderableAngle(0); }
+
+        // charge energy while on the ground
         if (energy < MAX_ENERGY && transform().getVelocity().y() == 0){
             energy += 0.5;
         }
 
     }
+
+    private void walk() {
+        float xVel = 0;
+        if (inputListener.isKeyPressed(KeyEvent.VK_LEFT)){
+            xVel -= VELOCITY_X;
+            renderer().setIsFlippedHorizontally(true);
+        }
+        if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT)){
+            xVel += VELOCITY_X;
+            renderer().setIsFlippedHorizontally(false);
+        }
+
+        if (xVel != 0){
+            renderer().setRenderable(walkingRenderable);
+        } else { renderer().setRenderable(standingRenderable); }
+
+        transform().setVelocityX(xVel);
+    }
+
 
     private void createEnergyCounter(){
 
