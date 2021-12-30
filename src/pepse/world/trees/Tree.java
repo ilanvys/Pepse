@@ -21,7 +21,7 @@ public class Tree {
     private final int FADEOUT_TIME = 10;
     private final int BLOCK = Block.SIZE;
     private final int MIN_DIST_BETWEEN_TREES = 10 * Block.SIZE;
-    private final float TREE_ODD = 0.1f;  // being checked every MIN_DIST_BETWEEN_TREES pixels
+    private final float TREE_ODD = 0.08f;  // being checked every MIN_DIST_BETWEEN_TREES pixels
     private final int MIN_TREE_HEIGHT = 4;
     private final int MAX_TREE_HEIGHT = 12;
     private final String ROOT_TAG = "rootBlock";
@@ -69,16 +69,19 @@ public class Tree {
      */
     public void createInRange(int minX, int maxX){
 
-        // IMPORTANT - so that there won't be any 'new' nums (which rand haven't checked yet)
-//        minX = minX - (minX % MIN_DIST_BETWEEN_TREES);
-
+        // swap values if min > max
+        if (minX > maxX){
+            int temp = maxX;
+            maxX = minX;
+            minX = temp;
+        }
 
         for (int x = minX; x < maxX; x += Block.SIZE){
             Random r = new Random(Objects.hash(x, seed));
             if (r.nextFloat() < TREE_ODD) {
+
                 int height = r.nextInt(MAX_TREE_HEIGHT - MIN_TREE_HEIGHT) + MIN_TREE_HEIGHT;
-                create(x, height);
-                System.out.println("PLANTED AT " + x);
+                createTree(x, height);
             }
         }
     }
@@ -88,7 +91,7 @@ public class Tree {
      * @param treeLocation X-coordinate for the tree
      * @param rootHeight num of blocks in the tree root
      */
-    private void create(int treeLocation, int rootHeight) {
+    private void createTree(int treeLocation, int rootHeight) {
 
         int groundHeight = calcHeightAt(treeLocation);
 

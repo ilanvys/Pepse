@@ -54,7 +54,6 @@ public class Terrain {
         maxX = getClosestSmallerNumDividesByBlockSize(maxX);
 
         // building according to avatar direction
-
         if (minX < maxX){
             for (int x = minX; x < maxX; x += Block.SIZE) {
                 createAtX(x);
@@ -73,7 +72,6 @@ public class Terrain {
             Block block = createBlock(x, roundedHeight);
             if (i < 2){
                 gameObjects.addGameObject(block, groundLayer);
-                block.renderer().setRenderable(new RectangleRenderable(Color.BLUE));
                 block.setTag(UPPER_TERRAIN_TAG);
             } else {
                 gameObjects.addGameObject(block, groundLayer + NON_COLLISABLE_LAYER_DIFF);
