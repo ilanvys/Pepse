@@ -67,16 +67,6 @@ public class Tree {
      * @param maxX The upper bound of the given range
      *             (will be rounded to a multiple of Block.SIZE).
      */
-//    public void createInRange(int minX, int maxX) {
-//        int initialTreeLocation = calcInitialTreeLocation();
-//        for (int i = initialTreeLocation; i < windowDimensions.x(); i+=480) {
-//            int treeLocation = i;
-//            int rootHeight = rand.nextInt(8) + 4;
-//
-//            this.create(treeLocation, rootHeight);
-//        }
-//    }
-
     public void createInRange(int minX, int maxX){
 
         // IMPORTANT - so that there won't be any 'new' nums (which rand haven't checked yet)
@@ -102,7 +92,6 @@ public class Tree {
 
         // add root
         createRoot(groundHeight, treeLocation, rootHeight);
-
         // add leaves
         int treeTopSize = (2*rootHeight/3)*BLOCK;
         int leavesCol = treeLocation-treeTopSize/2;
@@ -128,7 +117,7 @@ public class Tree {
      */
     private int calcHeightAt(int location) {
         int height = (int) terrain.groundHeightAt(location);
-        int roundedHeight = height - (height % Block.SIZE);
+        int roundedHeight = height - (height % Block.SIZE) - Block.SIZE;
         return roundedHeight;
     }
 

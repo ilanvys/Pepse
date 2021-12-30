@@ -1,8 +1,6 @@
 package pepse.world;
 
-import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -38,7 +36,6 @@ public class Terrain {
         this.groundLayer = groundLayer;
         this.groundHeightAtX0 *= windowDimensions.y();
         this.noise = new NoiseGenerator(seed);
-
     }
 
 
@@ -62,7 +59,8 @@ public class Terrain {
                 Block block = createBlock(x, roundedHeight);
                 if (i < 2){
                     gameObjects.addGameObject(block, groundLayer);
-                    block.renderer().setRenderable(new RectangleRenderable(Color.BLUE));
+                    block.renderer().setRenderable(new RectangleRenderable(
+                            ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
                     block.setTag(UPPER_TERRAIN_TAG);
                 } else {
                     gameObjects.addGameObject(block, groundLayer + NON_COLLISABLE_LAYER_DIFF);
@@ -80,7 +78,6 @@ public class Terrain {
         Block block = new Block(new Vector2(x, y), renderable);
 
         return block;
-
     }
 
 

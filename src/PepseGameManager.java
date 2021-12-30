@@ -29,12 +29,12 @@ public class PepseGameManager extends GameManager {
     private static final int SKY_LAYER = Layer.BACKGROUND;
     private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 5;
     private static final int SUN_LAYER = Layer.BACKGROUND + 10;
-    private static final int UPPER_TERRAIN_LAYER = Layer.DEFAULT;
-    private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
+    private static final int UPPER_TERRAIN_LAYER = Layer.DEFAULT - 5;
+    private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT; // todo how can we pass it to Terrain?
     private static final int AVATAR_LAYER = Layer.DEFAULT;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
-    public int LEAVES_LAYER = Layer.DEFAULT - 4;
-    public int ROOT_LAYER = Layer.DEFAULT - 5;
+    public int LEAVES_LAYER = Layer.DEFAULT + 5;
+    public int ROOT_LAYER = Layer.DEFAULT - 10;
 
     // TAGS  todo erase what were not using. notice its only a name consists with tag name given in class
     private static final String SKY_TAG = "sky";
@@ -107,7 +107,7 @@ public class PepseGameManager extends GameManager {
 
         // Differentiating layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
-
+        gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, UPPER_TERRAIN_LAYER, true);
     }
 
     @Override
