@@ -107,7 +107,6 @@ public class PepseGameManager extends GameManager {
         // build initial world
         buildInitialWorld();
 
-
         // Differentiating layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
 
@@ -209,6 +208,18 @@ public class PepseGameManager extends GameManager {
     public static void main(String[] args) {
 
         new PepseGameManager().run();
+//        int x = 1505;
+//        float y = 1505;
+//
+//        int remainder = x % Block.SIZE;
+//
+//        if (remainder < 0){
+//            remainder += Block.SIZE;
+//        }
+//
+//        System.out.println(x - remainder);
+//
+//        System.out.println((int) (Math.floor(y / Block.SIZE) * Block.SIZE));
 
     }
 }

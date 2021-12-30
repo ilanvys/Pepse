@@ -43,15 +43,16 @@ public class Terrain {
 
     public float groundHeightAt(float x) {
 
-        int roundedX = getClosestSmallerNumDividesByBlockSize((int) x) / Block.SIZE;
+//        int roundedX = getClosestSmallerNumDividesByBlockSize((int) x) / Block.SIZE;
+        int roundedX = normalizeToBlockSize((int) x) / Block.SIZE;
 
         return 10 * Block.SIZE * ( (float) noise.noise(roundedX)) + groundHeightAtX0;  // todo keep 10?
     }
 
     public void createInRange(int minX, int maxX){
 
-        minX = getClosestSmallerNumDividesByBlockSize(minX);
-        maxX = getClosestSmallerNumDividesByBlockSize(maxX);
+        minX = normalizeToBlockSize(minX);
+        maxX = normalizeToBlockSize(maxX);
 
         // building according to avatar direction
         if (minX < maxX){
@@ -90,13 +91,17 @@ public class Terrain {
         return block;
     }
 
+    private int normalizeToBlockSize(float x){  // todo make sure not duplicate
+        return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
+    }
+
 
     /**
      * Calculates the closest smaller num that divides by Block.SIZE
      * @param x
      * @return Closest num
      */
-    private int getClosestSmallerNumDividesByBlockSize(int x){  // todo make sure not duplicate
+    private int getClosestSmallerNumDividesByBlockSize(int x){  // todo erase
 
         int remainder = x % Block.SIZE;
 

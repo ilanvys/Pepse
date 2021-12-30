@@ -69,6 +69,10 @@ public class Tree {
      */
     public void createInRange(int minX, int maxX){
 
+        // normalize
+        minX = normalizeToBlockSize(minX);
+        maxX = normalizeToBlockSize(maxX);
+
         // swap values if min > max
         if (minX > maxX){
             int temp = maxX;
@@ -84,6 +88,10 @@ public class Tree {
                 createTree(x, height);
             }
         }
+    }
+
+    private int normalizeToBlockSize(float x){  // todo make sure not duplicate
+        return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }
 
     /**
