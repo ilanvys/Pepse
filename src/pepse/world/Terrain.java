@@ -86,7 +86,7 @@ public class Terrain {
      * @param x
      * @return Closest num
      */
-    private int getClosestSmallerNumDividesByBlockSize(int x){
+    private int getClosestSmallerNumDividesByBlockSize(int x){  // todo make sure not duplicate
 
         int remainder = x % Block.SIZE;
 
