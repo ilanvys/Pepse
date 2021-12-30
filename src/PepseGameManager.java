@@ -8,6 +8,7 @@ import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
+import pepse.world.Block;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
@@ -102,17 +103,21 @@ public class PepseGameManager extends GameManager {
         tree.createInRange(0, windowDimX);
         worldBuiltPointer = (int) avatar.getCenter().x();
 
+
         // Differentiating layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
 
     }
 
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
 
-        int avatarXPos = (int) avatar.getCenter().x();
-        int windowXDim = (int) windowDimensions.x();
+        int avatarXPos = normalizeToBlockSize(avatar.getCenter().x());
+        int windowXDim = normalizeToBlockSize(windowDimensions.x());
+
+
 
         if (worldBuiltPointer + windowXDim / 2 < avatarXPos) {  // avatar had walked right enough
             extendWorldToRight(avatarXPos, windowXDim);
@@ -166,6 +171,12 @@ public class PepseGameManager extends GameManager {
         }
         worldBuiltPointer = avatarXPos;  // updating world pointer
     }
+
+    private int normalizeToBlockSize(float x){
+        return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
+    }
+
+
 
     public static void main(String[] args) {
 
