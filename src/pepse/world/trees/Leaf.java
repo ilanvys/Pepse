@@ -9,7 +9,6 @@ import danogl.util.Vector2;
 public class Leaf extends GameObject {
     private final String upperTerrainTag;
     private Transition<Float> verticalTransition;
-    private boolean transitionExist = false;
 
     /**
      * Constructs a new leaf instance.
@@ -55,26 +54,23 @@ public class Leaf extends GameObject {
      * @return Transition instance for the current leaf.
      */
     public Transition<Float> initLeafVerticalFallTransition(GameObject leafBlock, int transitionTime) {
-        if(!transitionExist) {
-            this.verticalTransition = new Transition<Float>(
-                    leafBlock,
-                    (val) -> {
-                        if(val < 2) {
-                            leafBlock.transform().setVelocity(20, 25);
-                        }
-                        if(val > 7) {
-                            leafBlock.transform().setVelocity(-20, 25);
-                        }
-                    },
-                    0f,
-                    10f,
-                    Transition.CUBIC_INTERPOLATOR_FLOAT,
-                    transitionTime,
-                    Transition.TransitionType.TRANSITION_LOOP,
-                    null
-            );
-            transitionExist = true;
-        }
+        this.verticalTransition = new Transition<Float>(
+                leafBlock,
+                (val) -> {
+                    if(val < 2) {
+                        leafBlock.transform().setVelocity(20, 25);
+                    }
+                    if(val > 7) {
+                        leafBlock.transform().setVelocity(-20, 25);
+                    }
+                },
+                0f,
+                10f,
+                Transition.CUBIC_INTERPOLATOR_FLOAT,
+                transitionTime+1,
+                Transition.TransitionType.TRANSITION_LOOP,
+                null
+        );
         return this.verticalTransition;
     }
 }
