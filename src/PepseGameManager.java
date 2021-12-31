@@ -35,8 +35,8 @@ public class PepseGameManager extends GameManager {
     private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
     private static final int AVATAR_LAYER = Layer.DEFAULT;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
-    public int LEAVES_LAYER = Layer.DEFAULT - 4;
-    public int ROOT_LAYER = Layer.DEFAULT - 5;
+    private static final int LEAVES_LAYER = Layer.DEFAULT + 5;
+    private static final int ROOT_LAYER = Layer.DEFAULT + 4;
 
     // TAGS  todo erase what were not using. notice its only a name consists with tag name given in class
     private static final String SKY_TAG = "sky";
@@ -96,7 +96,7 @@ public class PepseGameManager extends GameManager {
         GameObject sunHalo = SunHalo.create(this.gameObjects(), SUN_HALO_LAYER, sun, SUN_COLOR);
 
         // create trees
-        this.tree = new Tree(this.gameObjects(), this.windowDimensions, terrain, seed, ROOT_LAYER, LEAVES_LAYER);
+        this.tree = new Tree(this.gameObjects(), terrain, seed, ROOT_LAYER, LEAVES_LAYER, ROOT_TAG,LEAF_BLOCK_TAG, UPPER_TERRAIN_TAG);
 
         // create avatar & camera
         Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
@@ -109,11 +109,9 @@ public class PepseGameManager extends GameManager {
 
         // Differentiating layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
-
     }
 
     private void buildInitialWorld() {
-
         float rightScreenX = camera.screenToWorldCoords(windowDimensions).x();
         float leftScreenX = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
 
@@ -139,11 +137,9 @@ public class PepseGameManager extends GameManager {
         if (leftScreenX <= leftWorldPointer){
             extendWorldToLeft(leftScreenX, leftWorldPointer - WORLD_BUFFER);
         }
-
     }
 
     private void extendWorldToRight(float start, float end){
-
         int normalizedStartX = normalizeToBlockSize(start);
         int normalizedEndX = normalizeToBlockSize(end);
 
@@ -160,12 +156,9 @@ public class PepseGameManager extends GameManager {
         // update both pointers
         rightWorldPointer = normalizedEndX;
         leftWorldPointer += (normalizedEndX - normalizedStartX);
-
-
     }
 
     private void extendWorldToLeft(float start, float end){
-
         int normalizedStart = normalizeToBlockSize(start);
         int normalizedEnd = normalizeToBlockSize(end);
 
@@ -182,14 +175,11 @@ public class PepseGameManager extends GameManager {
         // update pointers
         leftWorldPointer = normalizedEnd;
         rightWorldPointer -= (normalizedStart - normalizedEnd);
-
     }
 
     private void buildWorld(int minX, int maxX){
-
         terrain.createInRange(minX, maxX);
         tree.createInRange(minX, maxX);
-
     }
 
     private void removeObjectFromItsLayer(GameObject obj){
