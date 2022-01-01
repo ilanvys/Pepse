@@ -54,26 +54,24 @@ public class Leaf extends GameObject {
      * while falling, for a realistic feel.
      * @param leafBlock the leaf to append the Transition to.
      * @param transitionTime the amount of time the leaf goes to each direction.
-     * @return Transition instance for the current leaf.
      */
-    public Transition<Float> initLeafVerticalFallTransition(GameObject leafBlock, int transitionTime) {
-        this.verticalTransition = new Transition<Float>(
+    public void initLeafVerticalFallTransition(GameObject leafBlock, int transitionTime) {
+        this.verticalTransition = new Transition<>(
                 leafBlock,
                 (val) -> {
-                    if(val < 2) {
+                    if (val < 2) {
                         leafBlock.transform().setVelocity(20, 25);
                     }
-                    if(val > 7) {
+                    if (val > 7) {
                         leafBlock.transform().setVelocity(-20, 25);
                     }
                 },
                 0f,
                 10f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
-                transitionTime+1,
+                transitionTime + 1,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null
         );
-        return this.verticalTransition;
     }
 }

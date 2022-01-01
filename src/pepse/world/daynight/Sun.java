@@ -56,17 +56,16 @@ public class Sun {
         float intervalY = (windowDimensions.y()/14) / 360;
 
         // create sun movement transition
-        new Transition<Float>(
+        new Transition<>(
                 sun,
                 (val) -> {
-                    if(val <= 180) {
+                    if (val <= 180) {
                         sun.setCenter(new Vector2(
-                                startPositionX + intervalX*val,
+                                startPositionX + intervalX * val,
                                 sun.getCenter().y() - intervalY));
-                    }
-                    else {
+                    } else {
                         sun.setCenter(new Vector2(
-                                startPositionX + intervalX*val,
+                                startPositionX + intervalX * val,
                                 sun.getCenter().y() + intervalY));
                     }
                 },

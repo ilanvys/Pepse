@@ -37,9 +37,7 @@ public class SunHalo {
         sunHalo.setTag("sunHalo");
         gameObjects.addGameObject(sunHalo, layer);
 
-        sunHalo.addComponent((deltaTime) -> {
-            sunHalo.setCenter(sun.getCenter());
-        });
+        sunHalo.addComponent((deltaTime) -> sunHalo.setCenter(sun.getCenter()));
 
         return sunHalo;
     }

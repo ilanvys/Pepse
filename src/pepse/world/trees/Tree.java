@@ -13,7 +13,6 @@ import java.awt.*;
 import java.util.Objects;
 import java.util.Random;
 
-
 /**
  * Responsible for the creation and management of trees.
  */
@@ -27,8 +26,6 @@ public class Tree {
     private final int MIN_TREE_HEIGHT = 4;
     private final int MAX_TREE_HEIGHT = 12;
 
-    // TODO REFACTOR! all remaining magic nums ->> constants (there are plenty magic nums in transitions)
-
     // FIELDS
     private final GameObjectCollection gameObjects;
     private final Terrain terrain; //TODO: get callback maybe?
@@ -39,7 +36,6 @@ public class Tree {
     private final String rootTag;
     private final String leafBlockTag;
     private final String upperTerrainTag;
-
 
     /**
      * This function initiates the class with all the params necessary
@@ -100,7 +96,12 @@ public class Tree {
         }
     }
 
-    private int normalizeToBlockSize(float x){  // todo make sure not duplicate
+    /**
+     * Method normalizes given int to be divisible by Block.SIZE (rounds int down)
+     * @param x the num to normalize
+     * @return normalized integer
+     */
+    private int normalizeToBlockSize(float x) {
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }
 
@@ -150,15 +151,6 @@ public class Tree {
         int height = (int) terrain.groundHeightAt(location);
         int roundedHeight = height - (height % Block.SIZE) - Block.SIZE;
         return roundedHeight;
-    }
-
-    /**
-     * @return random location for the first tree,
-     *         rounded to a multiple of Block.SIZE
-     */
-    private int calcInitialTreeLocation() {  // todo Erase? its not being used
-
-        return (rand.nextInt(1000)/BLOCK)*BLOCK;
     }
 
     /**
@@ -227,10 +219,10 @@ public class Tree {
      * @param leafRand transition time based on the leaf's randomness.
      */
     private void createDimensionsChangeTransition(GameObject leafBlock, int leafRand) {
-        new Transition<Float>(
+        new Transition<>(
                 leafBlock,
                 (size) -> leafBlock.setDimensions(
-                        new Vector2(BLOCK+size, BLOCK+size)),
+                        new Vector2(BLOCK + size, BLOCK + size)),
                 -1f,
                 4f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
@@ -247,7 +239,7 @@ public class Tree {
      * @param leafRand transition time based on the leaf's randomness.
      */
     private void createAngleChangeTransition(GameObject leafBlock, int leafRand) {
-        new Transition<Float>(
+        new Transition<>(
                 leafBlock,
                 (angle) -> leafBlock.renderer().setRenderableAngle(angle),
                 0f,
@@ -284,13 +276,11 @@ public class Tree {
                 // create transition for vertical movement
                 leafBlock.initLeafVerticalFallTransition(leafBlock, verticalRand);
 
-                leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> {
-                    initLeafAfterlifeWaitTask(
-                            leafBlock,
-                            originalLeafLocation,
-                            leafRand,
-                            verticalRand);
-                });
+                leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> initLeafAfterlifeWaitTask(
+                        leafBlock,
+                        originalLeafLocation,
+                        leafRand,
+                        verticalRand));
             });
     }
 
@@ -312,31 +302,5 @@ public class Tree {
             leafRand/2+1,
             false,
             () -> createLeafFallTask(leafBlock, originalLeafLocation, leafRand, verticalRand));
-    }
-
-    /**
-     * This method creates a Transition that causes the leaf to move vertically
-     * while falling, for a realistic feel.
-     * @param leafBlock the leaf to append the Transition to.
-     * @param leafRand transition time based on the leaf's randomness
-     */
-    private Transition<Float> initLeafVerticalFallTransition(GameObject leafBlock, int leafRand) {
-        return new Transition<Float>(
-                leafBlock,
-                (val) -> {
-                    if(val < 2) {
-                        leafBlock.transform().setVelocity(20, 25);
-                    }
-                    if(val > 7) {
-                        leafBlock.transform().setVelocity(-20, 25);
-                    }
-                },
-                0f,
-                10f,
-                Transition.CUBIC_INTERPOLATOR_FLOAT,
-                leafRand/2+2,
-                Transition.TransitionType.TRANSITION_LOOP,
-                null
-        );
     }
 }

@@ -48,18 +48,16 @@ public class Night {
                 night,
                 cycleLength/2,
                 false,
-                () -> {
-                    new Transition<Float>(
-                            night,
-                            night.renderer()::setOpaqueness,
-                            0f,
-                            MIDNIGHT_OPACITY,
-                            Transition.CUBIC_INTERPOLATOR_FLOAT,
-                            cycleLength,
-                            Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
-                            null
-                    );
-                });
+                () -> new Transition<>(
+                        night,
+                        night.renderer()::setOpaqueness,
+                        0f,
+                        MIDNIGHT_OPACITY,
+                        Transition.CUBIC_INTERPOLATOR_FLOAT,
+                        cycleLength,
+                        Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
+                        null
+                ));
 
         return night;
     }
