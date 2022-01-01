@@ -13,13 +13,14 @@ import java.awt.*;
 import java.util.Objects;
 import java.util.Random;
 
+
 public class Tree {
     // CONSTANTS
     private final Color ROOT_COLOR = new Color(100, 50, 20);
     private final Color LEAF_COLOR = new Color(50, 200, 30);
     private final int FADEOUT_TIME = 10;
     private final int BLOCK = Block.SIZE;
-    private final float TREE_ODD = 0.08f;  // being checked every MIN_DIST_BETWEEN_TREES pixels
+    private final float TREE_ODD = 0.08f;
     private final int MIN_TREE_HEIGHT = 4;
     private final int MAX_TREE_HEIGHT = 12;
 

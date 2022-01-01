@@ -73,4 +73,17 @@ classes with their constructors. Same goes for tags. we needed to tag our game o
 for several uses - like the collision between leaves and the terrain. So we passed
 down tags as well.
 
+<--- Infinite World --->
+PepseGameManager keeps 2 pointers: left and right. Each of them points to to point till which the world is
+currently built.
+While initializing the game, we build the world at windowDimensions size + BUFFER to each size (currently the
+buffer is 3*Block.SIZE, yet it can be easily changed as its a constant).
+Every time the camera (which follows the avatar) gets a certain pointer - we build an extra BUFFER length of
+the world (at the suitable direction) and remove a BUFFER length world from the other direction.
+To keep the world consistent, we use a Random object that depends on the location of the object we're building
+ and the current game's seed.
+For instance, if a tree of 8-blocks-height was built at x=180, we can guarantee that when we'll build trees at
+ 150 <= x <= 210 again (at the same game, as seed is per game) will again build 8-blocks-height tree.
+
 <--- Bonuses --->
+Energy Bar

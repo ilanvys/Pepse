@@ -9,6 +9,10 @@ import util.ColorSupplier;
 
 import java.awt.*;
 
+/**
+ * Represents Terrain object. Terrain can tell the wanted ground's height at certain X and can build Terrain.
+ * @author Yonatan Chocron
+ */
 public class Terrain {
 
     private static final Color BASE_GROUND_COLOR = new Color(212, 123,74);
@@ -25,8 +29,6 @@ public class Terrain {
 
     private float groundHeightAtX0 = 2/3f; // of window dimensions
 
-
-
     public Terrain(GameObjectCollection gameObjects,
                    int groundLayer,
                    Vector2 windowDimensions,
@@ -39,15 +41,17 @@ public class Terrain {
     }
 
 
-
     public float groundHeightAt(float x) {
-
-//        int roundedX = getClosestSmallerNumDividesByBlockSize((int) x) / Block.SIZE;
         int roundedX = normalizeToBlockSize((int) x) / Block.SIZE;
-
-        return 10 * Block.SIZE * ( (float) noise.noise(roundedX)) + groundHeightAtX0;  // todo keep 10?
+        return 10 * Block.SIZE * ( (float) noise.noise(roundedX)) + groundHeightAtX0;
     }
 
+    /**
+     * Method builds terrain from minX till maxX at given order (it'll start from minX and build till maxX,
+     * also if minX > maxx)
+     * @param minX start X coord
+     * @param maxX end X coord
+     */
     public void createInRange(int minX, int maxX){
 
         minX = normalizeToBlockSize(minX);
@@ -66,6 +70,10 @@ public class Terrain {
         }
     }
 
+    /**
+     * Method builds terrain at proper height at given X.
+     * @param x
+     */
     private void createAtX(int x) {
         int roundedHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
         for (int i = 0; i < TERRAIN_DEPTH; i++) {
@@ -83,32 +91,25 @@ public class Terrain {
         }
     }
 
+    /**
+     * Method creates block at a certain position (x,y)
+     * @param x X coord
+     * @param y Y coord
+     * @return Block
+     */
     private static Block createBlock(int x, int y) {
         Renderable renderable = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
         Block block = new Block(new Vector2(x, y), renderable);
-
         return block;
     }
 
+    /**
+     * Method normalizes given int to be divisible by Block.SIZE (rounds int down)
+     * @param x
+     * @return
+     */
     private int normalizeToBlockSize(float x){  // todo make sure not duplicate
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
-    }
-
-
-    /**
-     * Calculates the closest smaller num that divides by Block.SIZE
-     * @param x
-     * @return Closest num
-     */
-    private int getClosestSmallerNumDividesByBlockSize(int x){  // todo erase
-
-        int remainder = x % Block.SIZE;
-
-        if (remainder < 0){
-            remainder += Block.SIZE;
-        }
-
-        return x - remainder;
     }
 
 }
