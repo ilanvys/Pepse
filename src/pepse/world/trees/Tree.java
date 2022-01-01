@@ -130,7 +130,7 @@ public class Tree {
                 createLeafAnimation(leafBlock, rand);
                 createLeafFallTask(leafBlock,
                         originalLeafLocation,
-                        rand.nextInt(15),
+                        rand.nextInt(50),
                         rand.nextInt(5)+1);
 
                 gameObjects.addGameObject(leafBlock, leavesLayer);
