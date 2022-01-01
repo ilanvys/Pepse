@@ -15,7 +15,13 @@ import danogl.util.Vector2;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+/**
+ * Represents Avatar object. Takes care of all avatar's properties and features.
+ * @author Yonatan Chocron
+ */
 public class Avatar extends GameObject {
+
+    // CONSTANTS
     private static final String STAND_IMAGE_PATH = "src/pepse/assets/avatarStand.png";
     private static final String WALK_RIGHT_IMAGE_PATH = "src/pepse/assets/avatarWalkRight.png";
     private static final String WALK_LEFT_IMAGE_PATH = "src/pepse/assets/avatarWalkLeft.png";
@@ -29,19 +35,19 @@ public class Avatar extends GameObject {
     private static final Vector2 ENERGY_COUNTER_POS = new Vector2(30,30);
     private static final Vector2 ENERGY_COUNTER_DIMENSIONS = new Vector2(100,30);
 
+    // FIELDS
     private static Renderable standingRenderable;
     private static Renderable walkingRenderable;
 
     private final UserInputListener inputListener;
     private final GameObjectCollection gameObjects;
-
     private float energy = MAX_ENERGY;
     private TextRenderable energyRenderable;
 
 
     /**
-     * Construct a new GameObject instance.
-     * @param inputListener // todo
+     * Construct a new Avatar instance.
+     * @param inputListener inputListener instance
      */
     public Avatar(UserInputListener inputListener, GameObjectCollection gameObjects) {
         super(Vector2.ZERO, DIMENSIONS, new RectangleRenderable(Color.BLACK));
@@ -49,6 +55,15 @@ public class Avatar extends GameObject {
         this.inputListener = inputListener;
     }
 
+    /**
+     * Creates new Avatar.
+     * @param gameObjects gameObjects
+     * @param layer layer
+     * @param topLeftCorner initial position of the avatar
+     * @param inputListener inputListener instance
+     * @param imageReader imageReader instance
+     * @return Avatar instance defined according to supplied parameters
+     */
     public static Avatar create(GameObjectCollection gameObjects,
                                 int layer,
                                 Vector2 topLeftCorner,
@@ -70,6 +85,10 @@ public class Avatar extends GameObject {
 
     }
 
+    /**
+     * creates all avatar's renderables
+     * @param imageReader
+     */
     private static void createRenderables(ImageReader imageReader) {
 
         // standing
@@ -89,32 +108,31 @@ public class Avatar extends GameObject {
         // Update energy renderer
         energyRenderable.setString(String.format(ENERGY_STRING, (int) energy));
 
-        // Walking
+        // Conduct avatar possible operations
         walk();
-
-        // Flying
         fly();
-
-        // Jumping
         jump();
-
     }
 
+    /**
+     * Takes care of jumping logic, including listening to the user's input (will jump only if jump key was
+     * pressed)
+     */
     private void jump() {
-
         if (    inputListener.isKeyPressed(KeyEvent.VK_SPACE)
                 && transform().getVelocity().y() == 0){
-
             transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
-
         }
     }
 
+    /**
+     * Takes care of flying logic, including listening to the user's input (will fly only if fly keys were
+     * pressed and all other conditions (enough energy) are met).
+     */
     private void fly() {
         if (    inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
                 inputListener.isKeyPressed(KeyEvent.VK_SHIFT) &&
                 energy > 0){
-
             transform().setVelocityY(-VELOCITY_JUMP);  // minus since value should be negative
             renderer().setRenderableAngle(-80);
             energy -= 0.5;  // reduce energy while flying
@@ -128,6 +146,10 @@ public class Avatar extends GameObject {
 
     }
 
+    /**
+     * Takes care of walking logic, including listening to the user's input (will walk only if walking keys
+     * were pressed)
+     */
     private void walk() {
         float xVel = 0;
         if (inputListener.isKeyPressed(KeyEvent.VK_LEFT)){
@@ -146,7 +168,9 @@ public class Avatar extends GameObject {
         transform().setVelocityX(xVel);
     }
 
-
+    /**
+     * creates energy counter
+     */
     private void createEnergyCounter(){
 
         this.energyRenderable = new TextRenderable(String.format(ENERGY_STRING, (int) energy));
@@ -155,7 +179,5 @@ public class Avatar extends GameObject {
                 energyRenderable);
         energyCounter.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         gameObjects.addGameObject(energyCounter, Layer.UI);
-
     }
-
 }

@@ -20,6 +20,10 @@ import pepse.world.trees.Tree;
 import java.awt.*;
 import java.util.Random;
 
+/**
+ * Represents PepseGameManeger instance.
+ * @author Ilan Vys, Yonatan Chocron
+ */
 public class PepseGameManager extends GameManager {
     // CONSTANTS
     private static final int OPTIONAL_SEEDS = 1000;
@@ -32,7 +36,7 @@ public class PepseGameManager extends GameManager {
     private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 5;
     private static final int SUN_LAYER = Layer.BACKGROUND + 10;
     private static final int UPPER_TERRAIN_LAYER = Layer.DEFAULT;
-    private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
+    private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10;
     private static final int AVATAR_LAYER = Layer.DEFAULT + 10;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
     private static final int LEAVES_LAYER = Layer.DEFAULT + 5;
@@ -43,7 +47,7 @@ public class PepseGameManager extends GameManager {
     private static final String SUN_HALO_TAG = "sun halo";
     private static final String SUN_TAG = "sun";
     private static final String UPPER_TERRAIN_TAG = "upper terrain";
-    private static final String LOWER_TERRAIN_TAG = "lower terrain"; // todo how can we pass it to Terrain?
+    private static final String LOWER_TERRAIN_TAG = "lower terrain";
     private static final String AVATAR_TAG = "avatar";
     private static final String NIGHT_TAG = "night";
     private static final String LEAF_BLOCK_TAG = "leafBlock";
@@ -87,7 +91,7 @@ public class PepseGameManager extends GameManager {
         this.terrain = new Terrain(gameObjects(),
                 UPPER_TERRAIN_LAYER,
                 windowController.getWindowDimensions(),
-                seed); // todo use real seed
+                seed);
 
         // create night/day
         Night.create(
@@ -152,6 +156,9 @@ public class PepseGameManager extends GameManager {
 
     }
 
+    /**
+     * Builds initial world according to window dimensions
+     */
     private void buildInitialWorld() {
         float rightScreenX = camera.screenToWorldCoords(windowDimensions).x();
         float leftScreenX = camera.screenToWorldCoords(
@@ -180,6 +187,11 @@ public class PepseGameManager extends GameManager {
         }
     }
 
+    /**
+     * Extends world to right AND removing redundant world from left
+     * @param start X coord from which world will be built
+     * @param end max X coord till which world will be built
+     */
     private void extendWorldToRight(float start, float end){
         int normalizedStartX = normalizeToBlockSize(start);
         int normalizedEndX = normalizeToBlockSize(end);
@@ -198,6 +210,12 @@ public class PepseGameManager extends GameManager {
         rightWorldPointer = normalizedEndX;
         leftWorldPointer += (normalizedEndX - normalizedStartX);
     }
+
+    /**
+     * Extends world to left AND removing redundant world from right
+     * @param start X coord from which world will be built
+     * @param end X coord till which world will be built
+     */
 
     private void extendWorldToLeft(float start, float end){
         int normalizedStart = normalizeToBlockSize(start);
@@ -218,11 +236,20 @@ public class PepseGameManager extends GameManager {
         rightWorldPointer -= (normalizedStart - normalizedEnd);
     }
 
+    /**
+     * Builds world
+     * @param minX X coord from which world will be built
+     * @param maxX X coord till which world will be built
+     */
     private void buildWorld(int minX, int maxX){
         terrain.createInRange(minX, maxX);
         tree.createInRange(minX, maxX);
     }
 
+    /**
+     * Will remove redundant objects from their layer (only removes terrain blocks, trees and leaves)
+     * @param obj GameObject to remove
+     */
     private void removeObjectFromItsLayer(GameObject obj){
         switch (obj.getTag()) {
             case UPPER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
@@ -231,6 +258,7 @@ public class PepseGameManager extends GameManager {
             case LEAF_BLOCK_TAG -> gameObjects().removeGameObject(obj, LEAVES_LAYER);
             }
         }
+
 
     private int normalizeToBlockSize(float x){
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);

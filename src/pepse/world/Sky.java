@@ -8,11 +8,22 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+/**
+ * Represents Sky instance.
+ * @author Yonatan Chocron
+ */
 public class Sky {
 
     private static final Color BASIC_SKY_COLOR = Color.decode("#80C6E5");
     private static final String SKY_TAG = "sky";
 
+    /**
+     * Constructor
+     * @param gameObjects
+     * @param windowDimensions
+     * @param skyLayer
+     * @return Sky instance
+     */
     public static GameObject create(GameObjectCollection gameObjects,
                                     Vector2 windowDimensions,
                                     int skyLayer) {

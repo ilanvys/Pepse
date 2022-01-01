@@ -2,6 +2,10 @@ package util;
 
 import java.util.Random;
 
+/**
+ * Noise Generator instance
+ * @author
+ */
 public class NoiseGenerator {
     private double seed;
     private long default_size;
