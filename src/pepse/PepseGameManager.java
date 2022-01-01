@@ -33,7 +33,7 @@ public class PepseGameManager extends GameManager {
     private static final int SUN_LAYER = Layer.BACKGROUND + 10;
     private static final int UPPER_TERRAIN_LAYER = Layer.DEFAULT;
     private static final int LOWER_TERRAIN_LAYER = Layer.DEFAULT - 10; // todo how can we pass it to Terrain?
-    private static final int AVATAR_LAYER = Layer.DEFAULT;
+    private static final int AVATAR_LAYER = Layer.DEFAULT + 10;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
     private static final int LEAVES_LAYER = Layer.DEFAULT + 5;
     private static final int ROOT_LAYER = Layer.DEFAULT + 4;
@@ -144,6 +144,12 @@ public class PepseGameManager extends GameManager {
                 LEAVES_LAYER,
                 UPPER_TERRAIN_LAYER,
                 true);
+        gameObjects().layers().shouldLayersCollide(
+                AVATAR_LAYER,
+                UPPER_TERRAIN_LAYER,
+                true);
+
+
     }
 
     private void buildInitialWorld() {
