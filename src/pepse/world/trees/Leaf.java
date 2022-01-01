@@ -6,6 +6,9 @@ import danogl.components.Transition;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
+/**
+ * Responsible for the creation of Leaves.
+ */
 public class Leaf extends GameObject {
     private final String upperTerrainTag;
     private Transition<Float> verticalTransition;

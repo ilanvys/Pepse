@@ -10,6 +10,9 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+/**
+ * Darkens the entire window.
+ */
 public class Night {
     private static final Float MIDNIGHT_OPACITY = 0.5f;
 

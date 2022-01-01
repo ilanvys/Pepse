@@ -8,6 +8,9 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+/**
+ * Represents the halo of sun.
+ */
 public class SunHalo {
     /**
      * This function creates a halo around a given object that represents the sun.

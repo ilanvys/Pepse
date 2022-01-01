@@ -111,5 +111,4 @@ public class Terrain {
     private int normalizeToBlockSize(float x){  // todo make sure not duplicate
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }
-
 }

@@ -14,6 +14,9 @@ import java.util.Objects;
 import java.util.Random;
 
 
+/**
+ * Responsible for the creation and management of trees.
+ */
 public class Tree {
     // CONSTANTS
     private final Color ROOT_COLOR = new Color(100, 50, 20);

@@ -9,6 +9,9 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+/**
+ * Represents the sun - moves across the sky in an elliptical path.
+ */
 public class Sun {
     private static GameObject sun;
     /**
