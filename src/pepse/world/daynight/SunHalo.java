@@ -23,7 +23,8 @@ public class SunHalo {
             GameObjectCollection gameObjects,
             int layer,
             GameObject sun,
-            Color color ) {
+            Color color) {
+
         GameObject sunHalo = new GameObject(
                 Vector2.ZERO,
                 new Vector2(250, 250),

@@ -13,51 +13,59 @@ import java.awt.*;
 import java.util.Objects;
 import java.util.Random;
 
-public class Tree {
 
+public class Tree {
     // CONSTANTS
     private final Color ROOT_COLOR = new Color(100, 50, 20);
     private final Color LEAF_COLOR = new Color(50, 200, 30);
     private final int FADEOUT_TIME = 10;
     private final int BLOCK = Block.SIZE;
-    private final int MIN_DIST_BETWEEN_TREES = 10 * Block.SIZE;
-    private final float TREE_ODD = 0.5f;  // being checked every MIN_DIST_BETWEEN_TREES pixels
+    private final float TREE_ODD = 0.08f;
     private final int MIN_TREE_HEIGHT = 4;
     private final int MAX_TREE_HEIGHT = 12;
-    private final String ROOT_TAG = "rootBlock";
 
     // TODO REFACTOR! all remaining magic nums ->> constants (there are plenty magic nums in transitions)
 
     // FIELDS
     private final GameObjectCollection gameObjects;
-    private final Vector2 windowDimensions;
     private final Terrain terrain; //TODO: get callback maybe?
-    private final Random rand;
+    private Random rand;
     private final int rootLayer;
     private final int leavesLayer;
     private final int seed;
+    private final String rootTag;
+    private final String leafBlockTag;
+    private final String upperTerrainTag;
+
 
     /**
      * This function initiates the class with all the params necessary
      * for creating the trees in the game.
      * @param gameObjects The collection of all participating game objects.
-     * @param windowDimensions The dimensions of the windows.
      * @param terrain the Terrain GameObject
      * @param seed A seed for a random number generator.
+     * @param rootLayer int representing the layer of tree roots in the game
+     * @param leavesLayer int representing the layer of tree leaves in the game
+     * @param rootTag Tag representing the tree roots.
+     * @param leafBlockTag Tag representing all leaves.
+     * @param upperTerrainTag Tag representing the upper terrain blocks.
      */
     public Tree(GameObjectCollection gameObjects,
-                Vector2 windowDimensions,
                 Terrain terrain,
                 int seed,
                 int rootLayer,
-                int leavesLayer) {
+                int leavesLayer,
+                String rootTag,
+                String leafBlockTag,
+                String upperTerrainTag) {
         this.gameObjects = gameObjects;
-        this.windowDimensions = windowDimensions;
         this.terrain = terrain;
-        this.rand = new Random(seed);
         this.rootLayer = rootLayer;
         this.leavesLayer = leavesLayer;
         this.seed = seed;
+        this.rootTag = rootTag;
+        this.leafBlockTag = leafBlockTag;
+        this.upperTerrainTag = upperTerrainTag;
     }
 
     /**
@@ -67,28 +75,30 @@ public class Tree {
      * @param maxX The upper bound of the given range
      *             (will be rounded to a multiple of Block.SIZE).
      */
-//    public void createInRange(int minX, int maxX) {
-//        int initialTreeLocation = calcInitialTreeLocation();
-//        for (int i = initialTreeLocation; i < windowDimensions.x(); i+=480) {
-//            int treeLocation = i;
-//            int rootHeight = rand.nextInt(8) + 4;
-//
-//            this.create(treeLocation, rootHeight);
-//        }
-//    }
-
     public void createInRange(int minX, int maxX){
+        // normalize
+        minX = normalizeToBlockSize(minX);
+        maxX = normalizeToBlockSize(maxX);
 
-        // IMPORTANT - so that there won't be any 'new' nums (which rand haven't checked yet)
-        minX = minX - (minX % MIN_DIST_BETWEEN_TREES);
+        // swap values if min > max
+        if (minX > maxX){
+            int temp = maxX;
+            maxX = minX;
+            minX = temp;
+        }
 
-        for (int x = minX; x <= maxX; x += MIN_DIST_BETWEEN_TREES){
-            Random r = new Random(Objects.hash(x, seed));
-            if (r.nextFloat() < TREE_ODD) {
-                int height = r.nextInt(MAX_TREE_HEIGHT - MIN_TREE_HEIGHT) + MIN_TREE_HEIGHT;
-                create(x, height);
+        for (int x = minX; x < maxX; x += Block.SIZE){
+            rand = new Random(Objects.hash(x, seed));
+            if (rand.nextFloat() < TREE_ODD) {
+
+                int height = rand.nextInt(MAX_TREE_HEIGHT - MIN_TREE_HEIGHT) + MIN_TREE_HEIGHT;
+                createTree(x, height);
             }
         }
+    }
+
+    private int normalizeToBlockSize(float x){  // todo make sure not duplicate
+        return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }
 
     /**
@@ -96,13 +106,11 @@ public class Tree {
      * @param treeLocation X-coordinate for the tree
      * @param rootHeight num of blocks in the tree root
      */
-    private void create(int treeLocation, int rootHeight) {
-
+    private void createTree(int treeLocation, int rootHeight) {
         int groundHeight = calcHeightAt(treeLocation);
 
         // add root
         createRoot(groundHeight, treeLocation, rootHeight);
-
         // add leaves
         int treeTopSize = (2*rootHeight/3)*BLOCK;
         int leavesCol = treeLocation-treeTopSize/2;
@@ -113,8 +121,17 @@ public class Tree {
                 Vector2 originalLeafLocation = new Vector2(i, groundHeight - j);
                 Leaf leafBlock = createLeaf(originalLeafLocation);
 
-                createLeafAnimation(leafBlock);
-                createLeafFallTask(leafBlock, originalLeafLocation);
+                int location = (int) Math.abs(leafBlock.getTopLeftCorner().x()) +
+                        (int) Math.abs(leafBlock.getTopLeftCorner().y()
+                                - terrain.groundHeightAt(leafBlock.getTopLeftCorner().y()));
+
+                Random rand = new Random(Objects.hash(location, seed));
+
+                createLeafAnimation(leafBlock, rand);
+                createLeafFallTask(leafBlock,
+                        originalLeafLocation,
+                        rand.nextInt(15),
+                        rand.nextInt(5)+1);
 
                 gameObjects.addGameObject(leafBlock, leavesLayer);
             }
@@ -128,7 +145,7 @@ public class Tree {
      */
     private int calcHeightAt(int location) {
         int height = (int) terrain.groundHeightAt(location);
-        int roundedHeight = height - (height % Block.SIZE);
+        int roundedHeight = height - (height % Block.SIZE) - Block.SIZE;
         return roundedHeight;
     }
 
@@ -137,6 +154,7 @@ public class Tree {
      *         rounded to a multiple of Block.SIZE
      */
     private int calcInitialTreeLocation() {
+
         return (rand.nextInt(1000)/BLOCK)*BLOCK;
     }
 
@@ -151,9 +169,10 @@ public class Tree {
                 originalLeafLocation,
                 new Vector2(BLOCK, BLOCK),
                 new RectangleRenderable(
-                        pepse.util.ColorSupplier.approximateColor(
-                                LEAF_COLOR, 20)
-                ));
+                        util.ColorSupplier.approximateColor(
+                                LEAF_COLOR, 20)),
+                leafBlockTag,
+                upperTerrainTag);
     }
 
     /**
@@ -170,41 +189,41 @@ public class Tree {
                     new Vector2(treeLocation, groundHeight - (i*BLOCK)),
                     BlockSizeVector,
                     new RectangleRenderable(
-                            pepse.util.ColorSupplier.approximateColor(
+                            util.ColorSupplier.approximateColor(
                                     ROOT_COLOR, 10)
                     ));
 
-            rootBlock.setTag(ROOT_TAG);
+            rootBlock.setTag(rootTag);
             gameObjects.addGameObject(rootBlock, rootLayer);
         }
     }
-
-
 
     /**
      * This method creates two scheduled tasks for random leaf
      * transitions.
      * @param leafBlock the leaf to append movement to.
+     * @param leafRand Random to select times from.
      */
-    private void createLeafAnimation(GameObject leafBlock) {
+    private void createLeafAnimation(GameObject leafBlock, Random leafRand) {
         new ScheduledTask(
                 leafBlock,
-                rand.nextInt(19) + 1,
-                true,
-                () -> createAngleChangeTransition(leafBlock));
+                leafRand.nextInt(5)+1,
+                false,
+                () -> createAngleChangeTransition(leafBlock, leafRand.nextInt(7)+1));
         new ScheduledTask(
                 leafBlock,
-                rand.nextInt(19) + 1,
-                true,
-                () -> createDimensionsChangeTransition(leafBlock));
+                leafRand.nextInt(5)+1,
+                false,
+                () -> createDimensionsChangeTransition(leafBlock, leafRand.nextInt(7)+1));
     }
 
     /**
      * This method creates a Transition that plays with the leaf's
      * size, for a realistic feel.
      * @param leafBlock the leaf to append the Transition to.
+     * @param leafRand transition time based on the leaf's randomness.
      */
-    private void createDimensionsChangeTransition(GameObject leafBlock) {
+    private void createDimensionsChangeTransition(GameObject leafBlock, int leafRand) {
         new Transition<Float>(
                 leafBlock,
                 (size) -> leafBlock.setDimensions(
@@ -212,7 +231,7 @@ public class Tree {
                 -1f,
                 4f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
-                rand.nextInt(7) + 3,
+                leafRand,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null
         );
@@ -222,15 +241,16 @@ public class Tree {
      * This method creates a TransitionTransition that plays with the leaf's
      * angle, for a realistic feel.
      * @param leafBlock the leaf to append the Transition to.
+     * @param leafRand transition time based on the leaf's randomness.
      */
-    private void createAngleChangeTransition(GameObject leafBlock) {
+    private void createAngleChangeTransition(GameObject leafBlock, int leafRand) {
         new Transition<Float>(
                 leafBlock,
                 (angle) -> leafBlock.renderer().setRenderableAngle(angle),
                 0f,
                 5f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
-                rand.nextInt(7) + 3,
+                leafRand,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null
         );
@@ -242,28 +262,31 @@ public class Tree {
      * @param leafBlock the leaf to append the task to.
      * @param originalLeafLocation The location the leaf as originally
      *                             created at.
+     * @param leafRand transition time based on the leaf's randomness.
+     * @param verticalRand transition time based on the leaf's randomness.
      */
-    private void createLeafFallTask(Leaf leafBlock, Vector2 originalLeafLocation) {
+    private void createLeafFallTask(
+            Leaf leafBlock,
+            Vector2 originalLeafLocation,
+            int leafRand,
+            int verticalRand) {
         leafBlock.renderer().setOpaqueness(1);
         leafBlock.setTopLeftCorner(originalLeafLocation);
 
         new ScheduledTask(
             leafBlock,
-            rand.nextInt(60) + 5,
+            (leafRand+1)*6,
             false,
             () -> {
                 // create transition for vertical movement
-                leafBlock.initLeafVerticalFallTransition(leafBlock, rand.nextInt(5) + 2);
+                leafBlock.initLeafVerticalFallTransition(leafBlock, verticalRand);
 
                 leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> {
-                    // stop leaf horizontal and vertical movement when fadeOut ends
-//                    leafBlock.transform().setVelocity(0, 0);
-//                    leafBlock.removeComponent(verticalTransition);
-
                     initLeafAfterlifeWaitTask(
                             leafBlock,
                             originalLeafLocation,
-                            rand.nextInt(5));
+                            leafRand,
+                            verticalRand);
                 });
             });
     }
@@ -274,24 +297,27 @@ public class Tree {
      * @param leafBlock the leaf to append the task to.
      * @param originalLeafLocation The location the leaf as originally
      *                             created at.
-     * @param afterlifeTime The time needed to wait before the leaf reappears.
+     * @param leafRand transition time based on the leaf's randomness.
+     * @param verticalRand transition time based on the leaf's randomness.
      */
     private void initLeafAfterlifeWaitTask(Leaf leafBlock,
                                            Vector2 originalLeafLocation,
-                                           int afterlifeTime) {
+                                           int leafRand,
+                                           int verticalRand) {
         new ScheduledTask(
             leafBlock,
-            afterlifeTime,
+            leafRand/2+1,
             false,
-            () -> createLeafFallTask(leafBlock, originalLeafLocation));
+            () -> createLeafFallTask(leafBlock, originalLeafLocation, leafRand, verticalRand));
     }
 
     /**
      * This method creates a Transition that causes the leaf to move vertically
      * while falling, for a realistic feel.
      * @param leafBlock the leaf to append the Transition to.
+     * @param leafRand transition time based on the leaf's randomness
      */
-    private Transition<Float> initLeafVerticalFallTransition(GameObject leafBlock) {
+    private Transition<Float> initLeafVerticalFallTransition(GameObject leafBlock, int leafRand) {
         return new Transition<Float>(
                 leafBlock,
                 (val) -> {
@@ -305,7 +331,7 @@ public class Tree {
                 0f,
                 10f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
-                rand.nextInt(5) + 2,
+                leafRand/2+2,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null
         );

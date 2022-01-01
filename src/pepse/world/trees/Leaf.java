@@ -7,28 +7,40 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 public class Leaf extends GameObject {
+    private final String upperTerrainTag;
     private Transition<Float> verticalTransition;
-//    private boolean transitionExist = false; //TODO: make flag
-    private static final String LEAF_BLOCK_TAG = "leafBlock";
 
-    //TODO: add documentation
     /**
-     * Construct a new GameObject instance.
+     * Constructs a new leaf instance.
      *
-     * @param topLeftCorner Position of the object, in window coordinates (pixels).
-     *                      Note that (0,0) is the top-left corner of the window.
-     * @param dimensions    Width and height in window coordinates.
-     * @param renderable    The renderable representing the object. Can be null, in which case
+     * @param topLeftCorner   Position of the object, in window coordinates (pixels).
+     *                        Note that (0,0) is the top-left corner of the window.
+     * @param dimensions      Width and height in window coordinates.
+     * @param renderable      The renderable representing the object. Can be null.
+     * @param leafBlockTag    Tag representing all leaves.
+     * @param upperTerrainTag Tag representing the upper terrain blocks.
      */
-    public Leaf(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
+    public Leaf(Vector2 topLeftCorner,
+                Vector2 dimensions,
+                Renderable renderable,
+                String leafBlockTag,
+                String upperTerrainTag) {
         super(topLeftCorner, dimensions, renderable);
-        this.setTag(LEAF_BLOCK_TAG);
+        this.upperTerrainTag = upperTerrainTag;
+        this.setTag(leafBlockTag);
     }
 
+    /**
+     * Makes the leaf stop moving when colliding with the terrain.
+     *
+     * @param other The game object the ball collided into.
+     * @param collision  an instance of the collision
+     */
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (other.getTag().equals("upper terrain")){
+
+        if (other.getTag().equals(upperTerrainTag)) {
             this.transform().setVelocity(0,0);
             this.removeComponent(verticalTransition);
         }
@@ -38,7 +50,8 @@ public class Leaf extends GameObject {
      * This method creates a Transition that causes the leaf to move vertically
      * while falling, for a realistic feel.
      * @param leafBlock the leaf to append the Transition to.
-     * @return
+     * @param transitionTime the amount of time the leaf goes to each direction.
+     * @return Transition instance for the current leaf.
      */
     public Transition<Float> initLeafVerticalFallTransition(GameObject leafBlock, int transitionTime) {
         this.verticalTransition = new Transition<Float>(
@@ -54,7 +67,7 @@ public class Leaf extends GameObject {
                 0f,
                 10f,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
-                transitionTime,
+                transitionTime+1,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null
         );
