@@ -29,7 +29,7 @@ public class PepseGameManager extends GameManager {
     private static final int OPTIONAL_SEEDS = 1000;
     private static final float DAY_CYCLE_LENGTH = 30f;
     private static final Color SUN_COLOR = new Color(255, 255, 0, 20);
-    private static final int WORLD_BUFFER = 3*Block.SIZE;
+    private static final int WORLD_BUFFER = 5*Block.SIZE;
 
     // LAYERS
     private static final int SKY_LAYER = Layer.BACKGROUND;

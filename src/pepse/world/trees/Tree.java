@@ -130,7 +130,7 @@ public class Tree {
                 createLeafAnimation(leafBlock, rand);
                 createLeafFallTask(leafBlock,
                         originalLeafLocation,
-                        rand.nextInt(15),
+                        rand.nextInt(50),
                         rand.nextInt(5)+1);
 
                 gameObjects.addGameObject(leafBlock, leavesLayer);
@@ -153,7 +153,7 @@ public class Tree {
      * @return random location for the first tree,
      *         rounded to a multiple of Block.SIZE
      */
-    private int calcInitialTreeLocation() {
+    private int calcInitialTreeLocation() {  // todo Erase? its not being used
 
         return (rand.nextInt(1000)/BLOCK)*BLOCK;
     }

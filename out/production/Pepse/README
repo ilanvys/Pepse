@@ -1,0 +1,89 @@
+ilan.vys
+yonatan163
+
+
+<--- The differences between the two UML's --->
+For creating the UML before we started working on the project, We read the instructions
+for ex_5, and created the UML based on the instructions we read.
+The way we saw it - pepse.PepseGameManager will have dependencies.
+pepse.world ->       Avatar, Sky and Block will all have a `create` method.
+                     Terrain will have a constructor and will have helper methods
+                     described in the instructions.
+pepse.world.trees -> Tree will have a constructor and will manage all the tree
+                     creations.
+pepse.daynight ->    Night,Sun and SunHalo all have a static `create` method.
+
+The final UML contains several differences:
+pepse.PepseGameManager has the layers and tags as attributes. It is also responsible for
+initializing the game and updating all the necessary objects, removing and adding
+objects to the game, by extending the world to both directions.
+pepse.world ->       Avatar has more methods, most of them private, for controlling
+                     the Avatar's movement. Avatar also extends GameObject from DanoGL,
+                     because we needed to override the update method of GameObject,
+                     to update the Avatar's movement.
+                     Terrain has a dependency in ColorSupplier for creating a variation
+                     in the terrain blocks colors. Terrain also depends on NoiseGenerator
+                     for creating the terrain's randomness.
+pepse.world.trees -> Tree has several private methods - the tree creation was separated
+                     to creating the leaves and roots for the trees. It depends on Leaf.
+                     Leaf was separated in order to extend GameObject, to override the
+                     onCollisionEnter - to stop the leaves when they hit the terrain.
+                     Tree also depends on ColorSupplier to create the variation in the
+                     leaves color's.
+pepse.daynight ->    SunHalo depends on Sun, in order to "follow" it.
+
+
+<--- explanation about the "endless world" logic --->
+
+
+<--- Implementation of pepse.world.trees --->
+The implentation consists of two classes. Tree has a constructor that receives
+parameters from the pepse.PepseGameManager. It also receives the layers and tags for the
+roots, leaves and the upper terrain level which the leaves fall on. First we
+decide on  location for the first tree, and we create all the other trees in the
+game relative to that tree, and all the random numbers are decided by the seed
+received in the Tree constructor. After deciding upon the tree location, we
+generate a root height and create it. Also we calculate the tree top size and
+location, and we add all the leaves needed, in the correct locations.
+
+Each leaf is an instance of Leaf, and upon it's creation, we generate a random
+number based on the location of the leaf in the game, that number will help us
+decide on all the time periods needed for the leaf's behviour. That number is
+dependant on the seed given. We create two animations that start at different times
+The animations are a slight angle change and a slight dimensions change.
+They both start at differnet times for each leaf. the delay is made by a schedualed
+task, and the animation is created by a Transition that goes back and forth.
+
+Secend thing we do is created a schedualed task that is actually a countdown to when
+a leaf drops. When the leaf starts dropping we create a fade out, when the fade out
+ends we have an afterlife time (also a schedualed task) until the leaf is rendered
+back in it's original location. it's an endless loop. When the leaf hits the upper
+terrain, the Leaf  object, that extends game object, comes in usefull. It has an
+override of the `onCollisionEnter` method, which drops it's velocity to zero once
+it hits the terrain.
+
+
+<--- Dilemmas and Solutions --->
+During our work on the project we encountered several problems and places where
+we had to make some design decisions.
+One main problem we had, is that we needed to order all the different layers
+that we have in the game. We decided that the best thing to do is to make
+pepse.PepseGameManager have all the layers saved as finals and pass them to the different
+classes with their constructors. Same goes for tags. we needed to tag our game objects
+for several uses - like the collision between leaves and the terrain. So we passed
+down tags as well.
+
+<--- Infinite World --->
+PepseGameManager keeps 2 pointers: left and right. Each of them points to to point till which the world is
+currently built.
+While initializing the game, we build the world at windowDimensions size + BUFFER to each size (currently the
+buffer is 3*Block.SIZE, yet it can be easily changed as its a constant).
+Every time the camera (which follows the avatar) gets a certain pointer - we build an extra BUFFER length of
+the world (at the suitable direction) and remove a BUFFER length world from the other direction.
+To keep the world consistent, we use a Random object that depends on the location of the object we're building
+ and the current game's seed.
+For instance, if a tree of 8-blocks-height was built at x=180, we can guarantee that when we'll build trees at
+ 150 <= x <= 210 again (at the same game, as seed is per game) will again build 8-blocks-height tree.
+
+<--- Bonuses --->
+Energy Bar
