@@ -1,11 +1,11 @@
-Ilan Vysokovsky 207375528
-Yonatan (?) 20..
+ilan.vys
+yonatan163
 
 
 <--- The differences between the two UML's --->
 For creating the UML before we started working on the project, We read the instructions
 for ex_5, and created the UML based on the instructions we read.
-The way we saw it - PepseGameManager will have dependencies.
+The way we saw it - pepse.PepseGameManager will have dependencies.
 pepse.world ->       Avatar, Sky and Block will all have a `create` method.
                      Terrain will have a constructor and will have helper methods
                      described in the instructions.
@@ -14,7 +14,7 @@ pepse.world.trees -> Tree will have a constructor and will manage all the tree
 pepse.daynight ->    Night,Sun and SunHalo all have a static `create` method.
 
 The final UML contains several differences:
-PepseGameManager has the layers and tags as attributes. It is also responsible for
+pepse.PepseGameManager has the layers and tags as attributes. It is also responsible for
 initializing the game and updating all the necessary objects, removing and adding
 objects to the game, by extending the world to both directions.
 pepse.world ->       Avatar has more methods, most of them private, for controlling
@@ -38,7 +38,7 @@ pepse.daynight ->    SunHalo depends on Sun, in order to "follow" it.
 
 <--- Implementation of pepse.world.trees --->
 The implentation consists of two classes. Tree has a constructor that receives
-parameters from the PepseGameManager. It also receives the layers and tags for the
+parameters from the pepse.PepseGameManager. It also receives the layers and tags for the
 roots, leaves and the upper terrain level which the leaves fall on. First we
 decide on  location for the first tree, and we create all the other trees in the
 game relative to that tree, and all the random numbers are decided by the seed
@@ -66,7 +66,11 @@ it hits the terrain.
 <--- Dilemmas and Solutions --->
 During our work on the project we encountered several problems and places where
 we had to make some design decisions.
-One main problem we had, is that we needed to ordere all the different layers
+One main problem we had, is that we needed to order all the different layers
 that we have in the game. We decided that the best thing to do is to make
-PepseGameManager have all the layers saved as finals and pass them to the different
-classes un their constructors.
+pepse.PepseGameManager have all the layers saved as finals and pass them to the different
+classes with their constructors. Same goes for tags. we needed to tag our game objects
+for several uses - like the collision between leaves and the terrain. So we passed
+down tags as well.
+
+<--- Bonuses --->

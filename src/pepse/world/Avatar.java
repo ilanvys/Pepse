@@ -16,10 +16,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
-
-    private static final String STAND_IMAGE_PATH = "assets/avatarStand.png";
-    private static final String WALK_RIGHT_IMAGE_PATH = "assets/avatarWalkRight.png";
-    private static final String WALK_LEFT_IMAGE_PATH = "assets/avatarWalkLeft.png";
+    private static final String STAND_IMAGE_PATH = "src/pepse/assets/avatarStand.png";
+    private static final String WALK_RIGHT_IMAGE_PATH = "src/pepse/assets/avatarWalkRight.png";
+    private static final String WALK_LEFT_IMAGE_PATH = "src/pepse/assets/avatarWalkLeft.png";
     private static final float AVATAR_ANIMATION_DELTA_TIME = 0.2f;
     private static final int VELOCITY_X = 300;
     private static final int VELOCITY_JUMP = 300;

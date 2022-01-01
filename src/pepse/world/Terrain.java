@@ -1,12 +1,11 @@
 package pepse.world;
 
-import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import pepse.util.ColorSupplier;
-import pepse.util.NoiseGenerator;
+import util.NoiseGenerator;
+import util.ColorSupplier;
 
 import java.awt.*;
 

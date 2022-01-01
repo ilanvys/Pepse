@@ -162,7 +162,7 @@ public class Tree {
                 originalLeafLocation,
                 new Vector2(BLOCK, BLOCK),
                 new RectangleRenderable(
-                        pepse.util.ColorSupplier.approximateColor(
+                        util.ColorSupplier.approximateColor(
                                 LEAF_COLOR, 20)),
                 leafBlockTag,
                 upperTerrainTag);
@@ -182,7 +182,7 @@ public class Tree {
                     new Vector2(treeLocation, groundHeight - (i*BLOCK)),
                     BlockSizeVector,
                     new RectangleRenderable(
-                            pepse.util.ColorSupplier.approximateColor(
+                            util.ColorSupplier.approximateColor(
                                     ROOT_COLOR, 10)
                     ));
 

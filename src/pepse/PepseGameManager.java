@@ -1,3 +1,5 @@
+package pepse;
+
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
@@ -6,7 +8,6 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
-import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
 import pepse.world.Block;
@@ -20,7 +21,6 @@ import java.awt.*;
 import java.util.Random;
 
 public class PepseGameManager extends GameManager {
-
     // CONSTANTS
     private static final int OPTIONAL_SEEDS = 1000;
     private static final float DAY_CYCLE_LENGTH = 30f;
@@ -48,7 +48,6 @@ public class PepseGameManager extends GameManager {
     private static final String NIGHT_TAG = "night";
     private static final String LEAF_BLOCK_TAG = "leafBlock";
     private static final String ROOT_TAG = "rootBlock"; // tree root
-
 
     // FIELDS
     private Vector2 windowDimensions;
@@ -80,40 +79,77 @@ public class PepseGameManager extends GameManager {
         int seed = random.nextInt(OPTIONAL_SEEDS);
 
         // create sky
-        pepse.world.Sky.create(gameObjects(), windowController.getWindowDimensions(), SKY_LAYER);
+        pepse.world.Sky.create(gameObjects(),
+                windowController.getWindowDimensions(),
+                SKY_LAYER);
 
         // create terrain
-        this.terrain = new Terrain(gameObjects(), UPPER_TERRAIN_LAYER,
-                windowController.getWindowDimensions(), seed); // todo use real seed
+        this.terrain = new Terrain(gameObjects(),
+                UPPER_TERRAIN_LAYER,
+                windowController.getWindowDimensions(),
+                seed); // todo use real seed
 
         // create night/day
-        Night.create(this.gameObjects(), NIGHT_LAYER, this.windowDimensions, DAY_CYCLE_LENGTH);
+        Night.create(
+                this.gameObjects(),
+                NIGHT_LAYER,
+                this.windowDimensions,
+                DAY_CYCLE_LENGTH);
 
         // crate sun
-        GameObject sun = Sun.create(this.gameObjects(), SUN_LAYER, this.windowDimensions, DAY_CYCLE_LENGTH);
+        GameObject sun = Sun.create(
+                this.gameObjects(),
+                SUN_LAYER,
+                this.windowDimensions,
+                DAY_CYCLE_LENGTH);
 
         // create sun halo
-        GameObject sunHalo = SunHalo.create(this.gameObjects(), SUN_HALO_LAYER, sun, SUN_COLOR);
+        GameObject sunHalo = SunHalo.create(
+                this.gameObjects(),
+                SUN_HALO_LAYER,
+                sun,
+                SUN_COLOR);
 
         // create trees
-        this.tree = new Tree(this.gameObjects(), terrain, seed, ROOT_LAYER, LEAVES_LAYER, ROOT_TAG,LEAF_BLOCK_TAG, UPPER_TERRAIN_TAG);
+        this.tree = new Tree(
+                this.gameObjects(),
+                terrain,
+                seed,
+                ROOT_LAYER,
+                LEAVES_LAYER,
+                ROOT_TAG,
+                LEAF_BLOCK_TAG,
+                UPPER_TERRAIN_TAG);
 
         // create avatar & camera
         Vector2 initPos = windowDimensions.mult(0.5f); // middle of screen
-        this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, initPos, inputListener, imageReader);
-        this.camera = new Camera(avatar, Vector2.ZERO, windowDimensions, windowDimensions);
+        this.avatar = Avatar.create(
+                gameObjects(),
+                AVATAR_LAYER,
+                initPos,
+                inputListener,
+                imageReader);
+        this.camera = new Camera(
+                avatar,
+                Vector2.ZERO,
+                windowDimensions,
+                windowDimensions);
         setCamera(camera);
 
         // build initial world
         buildInitialWorld();
 
         // Differentiating layers
-        gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, UPPER_TERRAIN_LAYER, true);
+        gameObjects().layers().shouldLayersCollide(
+                LEAVES_LAYER,
+                UPPER_TERRAIN_LAYER,
+                true);
     }
 
     private void buildInitialWorld() {
         float rightScreenX = camera.screenToWorldCoords(windowDimensions).x();
-        float leftScreenX = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
+        float leftScreenX = camera.screenToWorldCoords(
+                windowDimensions).x() - windowDimensions.x();
 
         leftWorldPointer = normalizeToBlockSize(leftScreenX) - WORLD_BUFFER;
         rightWorldPointer = normalizeToBlockSize(rightScreenX) + WORLD_BUFFER;
@@ -121,14 +157,13 @@ public class PepseGameManager extends GameManager {
         buildWorld(leftWorldPointer, rightWorldPointer);
     }
 
-
     @Override
-
     public void update(float deltaTime) {
         super.update(deltaTime);
 
         float rightScreenX = camera.screenToWorldCoords(windowDimensions).x();
-        float leftScreenX = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
+        float leftScreenX = camera.screenToWorldCoords(
+                windowDimensions).x() - windowDimensions.x();
 
         if (rightScreenX >= rightWorldPointer){
             extendWorldToRight(rightWorldPointer, rightScreenX + WORLD_BUFFER);
@@ -196,20 +231,6 @@ public class PepseGameManager extends GameManager {
     }
 
     public static void main(String[] args) {
-
         new PepseGameManager().run();
-//        int x = 1505;
-//        float y = 1505;
-//
-//        int remainder = x % Block.SIZE;
-//
-//        if (remainder < 0){
-//            remainder += Block.SIZE;
-//        }
-//
-//        System.out.println(x - remainder);
-//
-//        System.out.println((int) (Math.floor(y / Block.SIZE) * Block.SIZE));
-
     }
 }
