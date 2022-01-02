@@ -11,6 +11,7 @@ import danogl.gui.rendering.Camera;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
 import pepse.world.Block;
+import pepse.world.Surprise;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
@@ -29,7 +30,7 @@ public class PepseGameManager extends GameManager {
     private static final int OPTIONAL_SEEDS = 1000;
     private static final float DAY_CYCLE_LENGTH = 30f;
     private static final Color SUN_COLOR = new Color(255, 255, 0, 20);
-    private static final int WORLD_BUFFER = 5*Block.SIZE;
+    private static final int WORLD_BUFFER = 10*Block.SIZE;
 
     // LAYERS
     private static final int SKY_LAYER = Layer.BACKGROUND;
@@ -66,6 +67,12 @@ public class PepseGameManager extends GameManager {
     private int rightWorldPointer;
     private int leftWorldPointer;
 
+    // SURPRISE STUFF - todo erase or put in place
+    private Surprise surprise;
+    private int SURPRISE_LAYER = Layer.DEFAULT + 10;
+    private final String SURPRISE_TAG = "surprise";
+
+
     @Override
     public void initializeGame(ImageReader imageReader,
                                SoundReader soundReader,
@@ -77,6 +84,7 @@ public class PepseGameManager extends GameManager {
         this.windowController = windowController;
         this.inputListener = inputListener;
         this.soundReader = soundReader;
+
 
         // seed
         Random random = new Random();
@@ -139,6 +147,10 @@ public class PepseGameManager extends GameManager {
                 windowDimensions,
                 windowDimensions);
         setCamera(camera);
+
+        // SURPRISE STUFF  - todo erase ot put in place
+        this.surprise = new Surprise(gameObjects(), SURPRISE_LAYER, SURPRISE_TAG, imageReader, terrain);
+
 
         // build initial world
         buildInitialWorld();
@@ -244,6 +256,7 @@ public class PepseGameManager extends GameManager {
     private void buildWorld(int minX, int maxX){
         terrain.createInRange(minX, maxX);
         tree.createInRange(minX, maxX);
+        surprise.createInRange(minX, maxX);
     }
 
     /**
@@ -256,6 +269,7 @@ public class PepseGameManager extends GameManager {
             case LOWER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
             case ROOT_TAG -> gameObjects().removeGameObject(obj, ROOT_LAYER);
             case LEAF_BLOCK_TAG -> gameObjects().removeGameObject(obj, LEAVES_LAYER);
+            case SURPRISE_TAG -> gameObjects().removeGameObject(obj, SURPRISE_LAYER);
             }
         }
 

@@ -1,6 +1,7 @@
 package pepse.world;
 
 import danogl.GameObject;
+import danogl.collisions.Collision;
 import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.components.CoordinateSpace;
@@ -25,6 +26,9 @@ public class Avatar extends GameObject {
     private static final String STAND_IMAGE_PATH = "src/pepse/assets/avatarStand.png";
     private static final String WALK_RIGHT_IMAGE_PATH = "src/pepse/assets/avatarWalkRight.png";
     private static final String WALK_LEFT_IMAGE_PATH = "src/pepse/assets/avatarWalkLeft.png";
+    private static final String DANO_STANDING_IMAGE_PATH = "src/pepse/assets/danoStanding.jpeg";
+    private static final String DANO_WALKING_IMAGE_PATH = "src/pepse/assets/danoWalking.jpeg";
+    private static final String SURPRISE_TAG = "surprise"; // todo surp
     private static final float AVATAR_ANIMATION_DELTA_TIME = 0.2f;
     private static final int VELOCITY_X = 300;
     private static final int VELOCITY_JUMP = 300;
@@ -39,6 +43,7 @@ public class Avatar extends GameObject {
     private static Renderable standingRenderable;
     private static Renderable walkingRenderable;
 
+    private static ImageReader imageReader;
     private final UserInputListener inputListener;
     private final GameObjectCollection gameObjects;
     private float energy = MAX_ENERGY;
@@ -70,8 +75,9 @@ public class Avatar extends GameObject {
                                 UserInputListener inputListener,
                                 ImageReader imageReader){
 
+        Avatar.imageReader = imageReader;  // cannot assign this variable via this, since method is static
 
-        createRenderables(imageReader);
+        createRenderables();
 
         Avatar avatar = new Avatar(inputListener, gameObjects);
         avatar.setTopLeftCorner(topLeftCorner);
@@ -87,9 +93,8 @@ public class Avatar extends GameObject {
 
     /**
      * creates all avatar's renderables
-     * @param imageReader
      */
-    private static void createRenderables(ImageReader imageReader) {
+    private static void createRenderables() {
 
         // standing
         standingRenderable = imageReader.readImage(STAND_IMAGE_PATH, true);
@@ -112,6 +117,17 @@ public class Avatar extends GameObject {
         walk();
         fly();
         jump();
+    }
+
+    // surprise todo
+    @Override
+    public void onCollisionEnter(GameObject other, Collision collision) {
+        super.onCollisionEnter(other, collision);
+        if (other.getTag().equals("surprise")){
+            runSurprise();
+            Surprise.setDoneSurprise();
+            gameObjects.removeGameObject(other);
+        }
     }
 
     /**
@@ -179,5 +195,15 @@ public class Avatar extends GameObject {
                 energyRenderable);
         energyCounter.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         gameObjects.addGameObject(energyCounter, Layer.UI);
+    }
+
+    private void runSurprise(){
+        Renderable standing = imageReader.readImage(DANO_STANDING_IMAGE_PATH, true);
+        Renderable step = imageReader.readImage(DANO_WALKING_IMAGE_PATH, true);
+        Renderable walking = new AnimationRenderable(new Renderable[] {standing, step}, AVATAR_ANIMATION_DELTA_TIME);
+        this.setDimensions(this.getDimensions().mult(2));
+        standingRenderable = standing;
+        walkingRenderable = walking;
+
     }
 }
