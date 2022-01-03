@@ -17,6 +17,8 @@ The final UML contains several differences:
 pepse.PepseGameManager has the layers and tags as attributes. It is also responsible for
 initializing the game and updating all the necessary objects, removing and adding
 objects to the game, by extending the world to both directions.
+One important thing to notice is that all the classes in the project, except ColorSupplier
+and NoiseGenerator have GameObject as a dependency.
 pepse.world ->       Avatar has more methods, most of them private, for controlling
                      the Avatar's movement. Avatar also extends GameObject from DanoGL,
                      because we needed to override the update method of GameObject,
@@ -24,6 +26,7 @@ pepse.world ->       Avatar has more methods, most of them private, for controll
                      Terrain has a dependency in ColorSupplier for creating a variation
                      in the terrain blocks colors. Terrain also depends on NoiseGenerator
                      for creating the terrain's randomness.
+                     Surprise is a class we added during the work on the project.
 pepse.world.trees -> Tree has several private methods - the tree creation was separated
                      to creating the leaves and roots for the trees. It depends on Leaf.
                      Leaf was separated in order to extend GameObject, to override the

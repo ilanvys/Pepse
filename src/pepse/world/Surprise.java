@@ -6,8 +6,6 @@ import danogl.gui.ImageReader;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
-import java.awt.*;
-
 /**
  * Represents surprise class.
  * Method can createInRange, and it has a 'turn off' flag (as the surprised is one-time per game)
@@ -76,12 +74,12 @@ public class Surprise {
     }
 
     /**
-     * Setter should run after surprised had been used. It'll prevent building anymore surprises.
+     * Setter should run after surprised had been used. It'll prevent building
+     * anymore surprises.
      */
     public static void setDoneSurprise(){
         doneSurprise = true;
     }
-
 
     /**
      * creates surprise at given X.
@@ -109,6 +107,4 @@ public class Surprise {
     private int normalizeToBlockSize(float x) {
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }
-
-
 }

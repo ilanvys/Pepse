@@ -158,8 +158,6 @@ public class PepseGameManager extends GameManager {
                 AVATAR_LAYER,
                 ROOT_LAYER,
                 true);
-
-
     }
 
     /**

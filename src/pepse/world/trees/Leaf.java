@@ -10,9 +10,10 @@ import danogl.util.Vector2;
  * Responsible for the creation of Leaves.
  */
 public class Leaf extends GameObject {
-
     private static final int xVel = 20;
     private static final int yVel = 25;
+    private final float MIN_VERTICAL_TRANSITION = 0;
+    private final float MAX_VERTICAL_TRANSITION = 10;
 
     private final String upperTerrainTag;
     private Transition<Float> verticalTransition;
@@ -70,8 +71,8 @@ public class Leaf extends GameObject {
                         leafBlock.transform().setVelocity(-xVel, yVel);
                     }
                 },
-                0f,
-                10f,
+                MIN_VERTICAL_TRANSITION,
+                MAX_VERTICAL_TRANSITION,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
                 transitionTime + 1,
                 Transition.TransitionType.TRANSITION_LOOP,

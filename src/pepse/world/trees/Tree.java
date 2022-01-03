@@ -2,7 +2,6 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
-import danogl.components.GameObjectPhysics;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
@@ -27,6 +26,14 @@ public class Tree {
     private final int MIN_TREE_HEIGHT = 4;
     private final int MAX_TREE_HEIGHT = 12;
     private final int COLOR_DELTA = 10;
+    private final int MAX_LEAF_FALL_INTERVAL = 50;
+    private final int MAX_LEAF_ANIMATION_INTERVAL = 6;
+    private final float MIN_ANGLE_TRANSITION = 0;
+    private final float MAX_ANGLE_TRANSITION = 5;
+    private final float MIN_DIMENSIONS_TRANSITION = -1;
+    private final float MAX_DIMENSIONS_TRANSITION = 4;
+
+
 
     // FIELDS
     private final GameObjectCollection gameObjects;
@@ -136,8 +143,8 @@ public class Tree {
                 createLeafAnimation(leafBlock, rand);
                 createLeafFallTask(leafBlock,
                         originalLeafLocation,
-                        rand.nextInt(50),
-                        rand.nextInt(5)+1);
+                        rand.nextInt(MAX_LEAF_FALL_INTERVAL)+1,
+                        rand.nextInt(MAX_LEAF_ANIMATION_INTERVAL)+1);
 
                 gameObjects.addGameObject(leafBlock, leavesLayer);
             }
@@ -203,14 +210,14 @@ public class Tree {
     private void createLeafAnimation(GameObject leafBlock, Random leafRand) {
         new ScheduledTask(
                 leafBlock,
-                leafRand.nextInt(5)+1,
+                leafRand.nextInt(MAX_LEAF_ANIMATION_INTERVAL)+1,
                 false,
-                () -> createAngleChangeTransition(leafBlock, leafRand.nextInt(7)+1));
+                () -> createAngleChangeTransition(leafBlock, leafRand.nextInt(MAX_LEAF_ANIMATION_INTERVAL)+1));
         new ScheduledTask(
                 leafBlock,
-                leafRand.nextInt(5)+1,
+                leafRand.nextInt(MAX_LEAF_ANIMATION_INTERVAL)+1,
                 false,
-                () -> createDimensionsChangeTransition(leafBlock, leafRand.nextInt(7)+1));
+                () -> createDimensionsChangeTransition(leafBlock, leafRand.nextInt(MAX_LEAF_ANIMATION_INTERVAL)+1));
     }
 
     /**
@@ -224,8 +231,8 @@ public class Tree {
                 leafBlock,
                 (size) -> leafBlock.setDimensions(
                         new Vector2(BLOCK + size, BLOCK + size)),
-                -1f,
-                4f,
+                MIN_DIMENSIONS_TRANSITION,
+                MAX_DIMENSIONS_TRANSITION,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
                 leafRand,
                 Transition.TransitionType.TRANSITION_LOOP,
@@ -243,8 +250,8 @@ public class Tree {
         new Transition<>(
                 leafBlock,
                 (angle) -> leafBlock.renderer().setRenderableAngle(angle),
-                0f,
-                5f,
+                MIN_ANGLE_TRANSITION,
+                MAX_ANGLE_TRANSITION,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
                 leafRand,
                 Transition.TransitionType.TRANSITION_LOOP,
@@ -271,7 +278,7 @@ public class Tree {
 
         new ScheduledTask(
             leafBlock,
-            (leafRand+1)*6,
+            leafRand*MAX_LEAF_ANIMATION_INTERVAL,
             false,
             () -> {
                 // create transition for vertical movement
@@ -300,7 +307,7 @@ public class Tree {
                                            int verticalRand) {
         new ScheduledTask(
             leafBlock,
-            leafRand/2+1,
+            MAX_LEAF_FALL_INTERVAL/2,
             false,
             () -> createLeafFallTask(leafBlock, originalLeafLocation, leafRand, verticalRand));
     }
