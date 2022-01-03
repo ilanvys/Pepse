@@ -2,6 +2,7 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
+import danogl.components.GameObjectPhysics;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
@@ -25,10 +26,11 @@ public class Tree {
     private final float TREE_ODD = 0.08f;
     private final int MIN_TREE_HEIGHT = 4;
     private final int MAX_TREE_HEIGHT = 12;
+    private final int COLOR_DELTA = 10;
 
     // FIELDS
     private final GameObjectCollection gameObjects;
-    private final Terrain terrain; //TODO: get callback maybe?
+    private final Terrain terrain;
     private Random rand;
     private final int rootLayer;
     private final int leavesLayer;
@@ -165,7 +167,7 @@ public class Tree {
                 new Vector2(BLOCK, BLOCK),
                 new RectangleRenderable(
                         util.ColorSupplier.approximateColor(
-                                LEAF_COLOR, 20)),
+                                LEAF_COLOR, COLOR_DELTA*2)),
                 leafBlockTag,
                 upperTerrainTag);
     }
@@ -180,13 +182,12 @@ public class Tree {
         Vector2 BlockSizeVector = new Vector2(BLOCK, BLOCK);
 
         for (int i = 0; i < rootHeight; i++) {
-            GameObject rootBlock = new GameObject(
+            GameObject rootBlock = new Block(
                     new Vector2(treeLocation, groundHeight - (i*BLOCK)),
-                    BlockSizeVector,
                     new RectangleRenderable(
                             util.ColorSupplier.approximateColor(
-                                    ROOT_COLOR, 10)
-                    ));
+                                    ROOT_COLOR, COLOR_DELTA)
+            ));
 
             rootBlock.setTag(rootTag);
             gameObjects.addGameObject(rootBlock, rootLayer);

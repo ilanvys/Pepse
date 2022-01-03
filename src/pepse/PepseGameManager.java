@@ -42,15 +42,11 @@ public class PepseGameManager extends GameManager {
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
     private static final int LEAVES_LAYER = Layer.DEFAULT + 5;
     private static final int ROOT_LAYER = Layer.DEFAULT + 4;
+    private static final int SURPRISE_LAYER = Layer.DEFAULT + 10;
 
-    // TAGS  todo erase what were not using. notice its only a name consists with tag name given in class
-    private static final String SKY_TAG = "sky";
-    private static final String SUN_HALO_TAG = "sun halo";
-    private static final String SUN_TAG = "sun";
+    private final String SURPRISE_TAG = "surprise";
     private static final String UPPER_TERRAIN_TAG = "upper terrain";
     private static final String LOWER_TERRAIN_TAG = "lower terrain";
-    private static final String AVATAR_TAG = "avatar";
-    private static final String NIGHT_TAG = "night";
     private static final String LEAF_BLOCK_TAG = "leafBlock";
     private static final String ROOT_TAG = "rootBlock"; // tree root
 
@@ -64,14 +60,9 @@ public class PepseGameManager extends GameManager {
     private Terrain terrain;
     private Tree tree;
     private Camera camera;
+    private Surprise surprise;
     private int rightWorldPointer;
     private int leftWorldPointer;
-
-    // SURPRISE STUFF - todo erase or put in place
-    private Surprise surprise;
-    private int SURPRISE_LAYER = Layer.DEFAULT + 10;
-    private final String SURPRISE_TAG = "surprise";
-
 
     @Override
     public void initializeGame(ImageReader imageReader,
@@ -86,7 +77,7 @@ public class PepseGameManager extends GameManager {
         this.soundReader = soundReader;
 
 
-        // seed
+        // create seed
         Random random = new Random();
         int seed = random.nextInt(OPTIONAL_SEEDS);
 
@@ -148,9 +139,8 @@ public class PepseGameManager extends GameManager {
                 windowDimensions);
         setCamera(camera);
 
-        // SURPRISE STUFF  - todo erase ot put in place
+        // create surprise
         this.surprise = new Surprise(gameObjects(), SURPRISE_LAYER, SURPRISE_TAG, imageReader, terrain);
-
 
         // build initial world
         buildInitialWorld();
@@ -163,6 +153,10 @@ public class PepseGameManager extends GameManager {
         gameObjects().layers().shouldLayersCollide(
                 AVATAR_LAYER,
                 UPPER_TERRAIN_LAYER,
+                true);
+        gameObjects().layers().shouldLayersCollide(
+                AVATAR_LAYER,
+                ROOT_LAYER,
                 true);
 
 
@@ -264,16 +258,37 @@ public class PepseGameManager extends GameManager {
      * @param obj GameObject to remove
      */
     private void removeObjectFromItsLayer(GameObject obj){
+//        switch (obj.getTag()) {
+//            case UPPER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
+//            case LOWER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
+//            case ROOT_TAG -> gameObjects().removeGameObject(obj, ROOT_LAYER);
+//            case LEAF_BLOCK_TAG -> gameObjects().removeGameObject(obj, LEAVES_LAYER);
+//            case SURPRISE_TAG -> gameObjects().removeGameObject(obj, SURPRISE_LAYER);
+//            }
         switch (obj.getTag()) {
-            case UPPER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
-            case LOWER_TERRAIN_TAG -> gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
-            case ROOT_TAG -> gameObjects().removeGameObject(obj, ROOT_LAYER);
-            case LEAF_BLOCK_TAG -> gameObjects().removeGameObject(obj, LEAVES_LAYER);
-            case SURPRISE_TAG -> gameObjects().removeGameObject(obj, SURPRISE_LAYER);
+            case UPPER_TERRAIN_TAG:
+                gameObjects().removeGameObject(obj, UPPER_TERRAIN_LAYER);
+                break;
+            case LOWER_TERRAIN_TAG:
+                gameObjects().removeGameObject(obj, LOWER_TERRAIN_LAYER);
+                break;
+            case ROOT_TAG:
+                gameObjects().removeGameObject(obj, ROOT_LAYER);
+                break;
+            case LEAF_BLOCK_TAG:
+                gameObjects().removeGameObject(obj, LEAVES_LAYER);
+                break;
+            case SURPRISE_TAG:
+                gameObjects().removeGameObject(obj, SURPRISE_LAYER);
+                break;
             }
         }
 
-
+    /**
+     * normoliazed given float to
+     * @param x
+     * @return
+     */
     private int normalizeToBlockSize(float x){
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }

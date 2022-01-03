@@ -86,4 +86,20 @@ For instance, if a tree of 8-blocks-height was built at x=180, we can guarantee 
  150 <= x <= 210 again (at the same game, as seed is per game) will again build 8-blocks-height tree.
 
 <--- Bonuses --->
-Energy Bar
+* Energy Bar *
+Implementation:
+It's encapsulated within the Avatar instance, and represented by a few fields and function.
+Basically every update we update the energy bar according to the avatar's state (on ground / jumping / flying)
+
+* Surprise *
+avatar can pick up a Miri - and transform into something magical. If you're lucky enough to find 2 Miris
+(that barely happens!) - you'll transform to something even more cool.
+Implementation:
+To maintain project structure, Surprise is built according to the same design (implements part of the API)
+of Terrain and Tree - it has a createInRange method, which makes it easy for us to implement in
+PepseGameManager (Surprise was built after the game was done).
+Also, the surprise is 'disposable' - meaning it can only be invoked once during a game and there is no going
+back from it.
+To achieve this feature, we set a static 'turn off' field (and a public setter for it).
+That way, when the avatar collides with surprise, it can easily be 'turned off' and we won't be able to 'turn
+it on' again (as we implemented only a 'turn off' setter).

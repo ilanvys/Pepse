@@ -29,6 +29,13 @@ public class Terrain {
 
     private float groundHeightAtX0 = 2/3f; // of window dimensions
 
+    /**
+     * constructor
+     * @param gameObjects gameObjects
+     * @param groundLayer Layer to build terrain at
+     * @param windowDimensions windowDimensions
+     * @param seed game's seed
+     */
     public Terrain(GameObjectCollection gameObjects,
                    int groundLayer,
                    Vector2 windowDimensions,
@@ -40,7 +47,11 @@ public class Terrain {
         this.noise = new NoiseGenerator(seed);
     }
 
-
+    /**
+     * Method calculates proper height at given X.
+     * @param x given x coord
+     * @return normalized (divisible by Block.SIZE) height
+     */
     public float groundHeightAt(float x) {
         int roundedX = normalizeToBlockSize((int) x) / Block.SIZE;
         return 10 * Block.SIZE * ( (float) noise.noise(roundedX)) + groundHeightAtX0;
@@ -106,9 +117,9 @@ public class Terrain {
     /**
      * Method normalizes given int to be divisible by Block.SIZE (rounds int down)
      * @param x
-     * @return
+     * @return normalized int
      */
-    private int normalizeToBlockSize(float x){  // todo make sure not duplicate
+    private int normalizeToBlockSize(float x){
         return (int) (Math.floor(x / Block.SIZE) * Block.SIZE);
     }
 }

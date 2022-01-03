@@ -10,6 +10,10 @@ import danogl.util.Vector2;
  * Responsible for the creation of Leaves.
  */
 public class Leaf extends GameObject {
+
+    private static final int xVel = 20;
+    private static final int yVel = 25;
+
     private final String upperTerrainTag;
     private Transition<Float> verticalTransition;
 
@@ -44,7 +48,7 @@ public class Leaf extends GameObject {
         super.onCollisionEnter(other, collision);
 
         if (other.getTag().equals(upperTerrainTag)) {
-            this.transform().setVelocity(0,0);
+            this.transform().setVelocity(Vector2.ZERO);
             this.removeComponent(verticalTransition);
         }
     }
@@ -60,10 +64,10 @@ public class Leaf extends GameObject {
                 leafBlock,
                 (val) -> {
                     if (val < 2) {
-                        leafBlock.transform().setVelocity(20, 25);
+                        leafBlock.transform().setVelocity(xVel, yVel);
                     }
                     if (val > 7) {
-                        leafBlock.transform().setVelocity(-20, 25);
+                        leafBlock.transform().setVelocity(-xVel, yVel);
                     }
                 },
                 0f,
