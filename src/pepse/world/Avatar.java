@@ -28,7 +28,7 @@ public class Avatar extends GameObject {
     private static final String WALK_LEFT_IMAGE_PATH = "src/pepse/assets/avatarWalkLeft.png";
     private static final String DANO_STANDING_IMAGE_PATH = "src/pepse/assets/danoStanding.jpeg";
     private static final String DANO_WALKING_IMAGE_PATH = "src/pepse/assets/danoWalking.jpeg";
-    private static final String SURPRISE_TAG = "surprise"; // todo surp
+    private static final String SURPRISE_TAG = "surprise";
     private static final float AVATAR_ANIMATION_DELTA_TIME = 0.2f;
     private static final int VELOCITY_X = 300;
     private static final int VELOCITY_JUMP = 300;
@@ -119,11 +119,10 @@ public class Avatar extends GameObject {
         jump();
     }
 
-    // surprise todo
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (other.getTag().equals("surprise")){
+        if (other.getTag().equals(SURPRISE_TAG)){
             runSurprise();
             Surprise.setDoneSurprise();
             gameObjects.removeGameObject(other);
